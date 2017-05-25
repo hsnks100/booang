@@ -5,6 +5,7 @@
 #include <boost/graph/adjacency_list.hpp> // for customizable graphs
 #include <boost/graph/directed_graph.hpp> // A subclass to provide reasonable arguments to adjacency_list for a typical directed graph
 #include <boost/graph/undirected_graph.hpp>// A subclass to provide reasonable arguments to adjacency_list for a typical undirected graph
+#include <boost/graph/dijkstra_shortest_paths.hpp>
 
 template<typename edgeType, typename vertexProperty>
 class BGraph{
@@ -80,6 +81,28 @@ class BGraph{
                         edgeWeightMap[*outEdgeIter.first]); 
             }
         }
+        void dijk(typename graphType::vertex_descriptor v0){
+            // Create things for Dijkstra
+            //
+            typedef typename boost::graph_traits < graphType >::vertex_descriptor vertex_descriptor;
+            typedef typename boost::graph_traits < graphType >::edge_descriptor edge_descriptor;
+            typedef std::pair<int, int> Edge;
+            std::vector<vertex_descriptor> parents(boost::num_vertices(G)); // To store parents
+            std::vector<int> distances(boost::num_vertices(G)); // To store distances
+
+            // Compute shortest paths from v0 to all vertices, and store the output in parents and distances
+            boost::dijkstra_shortest_paths(G, v0, boost::predecessor_map(&parents[0]).distance_map(&distances[0]));
+
+            // Output results
+            std::cout << "distances and parents:" << std::endl;
+            typename boost::graph_traits < graphType >::vertex_iterator vertexIterator, vend;
+            for (boost::tie(vertexIterator, vend) = boost::vertices(G); vertexIterator != vend; ++vertexIterator) 
+            {
+                std::cout << "distance(" << *vertexIterator << ") = " << distances[*vertexIterator] << ", ";
+                std::cout << "parent(" << *vertexIterator << ") = " << parents[*vertexIterator] << std::endl;
+            }
+            std::cout << std::endl;
+        }
 };
 
 
@@ -96,6 +119,7 @@ int main(int,char*[])
     auto v0 = G.addVertex();
     auto v1 = G.addVertex();
     auto v2 = G.addVertex();
+    auto v3 = G.addVertex();
     G.getVertex(v0).Id = 2;
     // G[v0].Id = 2;
     
@@ -104,12 +128,7 @@ int main(int,char*[])
     G.addEdge(v0, v2, 300);
     G.addEdge(v2, v0, 400);
     G.addEdge(v1, v0, 50);
-
-    // auto edge = boost::out_edges(v0, G);
-
-
-    // std::cout << (*edge).m_target << std::endl;
-
+    G.addEdge(v2, v3, 10000);
     G.print();
 
 
@@ -127,6 +146,10 @@ int main(int,char*[])
     G.loopOutEdges(v0, [](int from, int to, int weight){
             std::cout << from << " " << to << " " << weight << std::endl;
             }); 
+
+
+    // dijkstra algorithm
+    G.dijk(v0);
 
 
 
