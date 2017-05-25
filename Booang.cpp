@@ -71,9 +71,8 @@ class BGraph{
             } 
         } 
 
-        void loopEdges(typename graphType::vertex_descriptor v, const std::function<void(int, int, edgeType)>& f){
-            auto outEdgeIter = boost::out_edges(v, G);
-
+        void loopOutEdges(typename graphType::vertex_descriptor v, const std::function<void(int, int, edgeType)>& f){
+            auto outEdgeIter = boost::out_edges(v, G); 
             auto edgeWeightMap = get(boost::edge_weight_t(), G);
 
             for(; outEdgeIter.first != outEdgeIter.second; ++outEdgeIter.first){
@@ -97,7 +96,6 @@ int main(int,char*[])
     auto v0 = G.addVertex();
     auto v1 = G.addVertex();
     auto v2 = G.addVertex();
-    std::cout << typeid(v0).name() << std::endl;
     G.getVertex(v0).Id = 2;
     // G[v0].Id = 2;
     
@@ -126,50 +124,11 @@ int main(int,char*[])
 
 
     // method 2
-    G.loopEdges(v0, [](int from, int to, int weight){
+    G.loopOutEdges(v0, [](int from, int to, int weight){
             std::cout << from << " " << to << " " << weight << std::endl;
-            });
-
+            }); 
 
 
 
     return 0;
 }
-
-
-
-// typedef boost::property<boost::vertex_property_tag, double> VertexProperty;
- 
-// [>
-// adjacency_list<OutEdgeContainer, VertexContainer, Directedness,
-               // VertexProperties, EdgeProperties,
-               // GraphProperties, EdgeList>
-// */
-// typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, VertexProperty> Graph;
- 
-// int main(int,char*[])
-// {
-  // // Create a graph object
-  // Graph g(3);
- 
-  // // Create two edges
-  // boost::add_edge(0,1,g);
-  // boost::add_edge(1,2,g);
- 
-  // typedef boost::property_map<Graph, boost::vertex_index_t>::type IndexMap;
-  // IndexMap index = get(boost::vertex_index, g);
- 
-  // typedef boost::graph_traits < Graph >::adjacency_iterator adjacency_iterator;
- 
-  // std::pair<adjacency_iterator, adjacency_iterator> neighbors =
-    // boost::adjacent_vertices(vertex(1,g), g);
- 
-  // for(; neighbors.first != neighbors.second; ++neighbors.first)
-    // {
-    // std::cout << index[*neighbors.first] << " ";
-    // }
- 
-  // return 0;
-// }
-
-
