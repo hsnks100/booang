@@ -116,6 +116,9 @@ class BGraph{
           break;
       }
     }
+
+    void loopAllVertices(){
+    }
     void dijk(vertex_descriptor v0){
       // Create things for Dijkstra
       //
