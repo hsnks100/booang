@@ -106,6 +106,16 @@ class BGraph{
             edgeWeightMap[*outEdgeIter.first]); 
       }
     }
+
+    void loopAllEdges(const std::function<bool(int, int, edgeType)>& f){ 
+      auto EdgeWeightMap = get(boost::edge_weight_t(), G);
+      auto edges = boost::edges(G);
+      for(; edges.first != edges.second; ++edges.first){
+        auto tt = *edges.first;
+        if( f((*edges.first).m_source, (*edges.first).m_target, EdgeWeightMap[*edges.first]) == false)
+          break;
+      }
+    }
     void dijk(vertex_descriptor v0){
       // Create things for Dijkstra
       //
