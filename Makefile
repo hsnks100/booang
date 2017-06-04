@@ -1,5 +1,5 @@
 CC = g++
-CXXFLAGS = -std=c++14 -I./
+CXXFLAGS = -std=c++14 -I./ -g
 TARGET = booang
 OBJECTS = Booang.o
 
@@ -11,3 +11,7 @@ $(TARGET): $(OBJECTS)
 
 clean :
 	rm *.o $(TARGET)
+
+
+
+
