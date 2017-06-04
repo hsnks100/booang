@@ -12,7 +12,7 @@ int main(int,char*[])
  
   // Check if an edge between v0 and v1 exists. It should not at this point.
   std::cout << "Edge exists?" << boost::edge(v0, v1, g).second << std::endl; // false
- 
+
   // Add an edge between v0 and v1.
   std::pair<Graph::edge_descriptor, bool> e0 = boost::add_edge(v0, v1, g);
  
@@ -23,6 +23,6 @@ int main(int,char*[])
   // should be exactly equal to e0
   std::pair<Graph::edge_descriptor, bool> retrievedEdge = boost::edge(v0, v1, g);
  
-  return 0;
+  return 0; 
 }
 
