@@ -4,15 +4,15 @@ using namespace std;
 
 #include "Booang.hpp"
 
-int main(){
+int main() {
   int busCount, routes;
   cin >> busCount >> routes;
   struct VertexProperty{
     int Id;
   };
 
-  BGraph<int, VertexProperty> G;
-
+  BGraph<int, VertexProperty> G; 
+  G.addVertex(
   for(int i=0; i<busCount + 1; i++){
     G.addVertex();
   }
