@@ -33,11 +33,17 @@ class BGraph{
     }
 
     void addEdge(vertexIndexType v0, 
+      bool isExist = toDescriptor.find(v0) != toDescriptor.end() && 
+        toDescriptor.find(v1) != toDescriptor.end();
+      assert(isExist == true);
         vertexIndexType v1, edgeType e) {
       boost::add_edge(toDescriptor[v0], toDescriptor[v1], e, G); 
     }
     void addEdge(vertexIndexType v0, 
         vertexIndexType v1){
+      bool isExist = toDescriptor.find(v0) != toDescriptor.end() && 
+        toDescriptor.find(v1) != toDescriptor.end();
+      assert(isExist == true);
       boost::add_edge(toDescriptor[v0], toDescriptor[v1], G); 
     }
 
