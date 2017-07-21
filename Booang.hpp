@@ -1,6 +1,7 @@
 // STL
 #include <iostream>                  // for std::cout 
 #include <cassert>
+#include <vector>
 
 // Boost
 #include <boost/graph/adjacency_list.hpp> // for customizable graphs
@@ -22,6 +23,7 @@ class BGraph{
     typedef typename graphType::edge_descriptor edge_descriptor;
 
     std::map<vertexIndexType, typename graphType::vertex_descriptor> toDescriptor;
+    std::map<typename graphType::vertex_descriptor, vertexIndexType> toVit;
     //std::map<vertexIndexType, int> toDescriptor;
     // typedef typename boost::graph_traits < graphType >::vertex_descriptor vertex_descriptor;
     // typedef typename boost::graph_traits < graphType >::edge_descriptor edge_descriptor;
@@ -29,7 +31,17 @@ class BGraph{
     graphType G;
 
     void addVertex(vertexIndexType v0) {
-      toDescriptor[v0] = boost::add_vertex(G); 
+      if(toDescriptor.find(v0) == toDescriptor.end()) {
+        toDescriptor[v0] = boost::add_vertex(G); 
+        toVit[toDescriptor[v0]] = v0;
+      }
+    }
+    void removeVertex(vertexIndexType v0) {
+      bool isExist = toDescriptor.find(v0) != toDescriptor.end();
+      assert(isExist == true);
+      boost::remove_vertex(toDescriptor[v0], G);
+      toVit.erase(toVit.find(toDescriptor[v0]));
+      toDescriptor.erase(v0);
     }
 
     void addEdge(vertexIndexType v0, 
@@ -54,15 +66,23 @@ class BGraph{
       assert(isExist == true);
       boost::remove_edge(toDescriptor[v0], toDescriptor[v1], G); 
     }
-    void removeVertex(vertexIndexType v0) {
-      bool isExist = toDescriptor.find(v0) != toDescriptor.end();
-      assert(isExist == true);
-      boost::remove_vertex(toDescriptor[v0], G);
-    }
 
 
     auto operator[](vertexIndexType v){
-      return boost::out_edges(toDescriptor[v], G); 
+      auto EdgeWeightMap = get(boost::edge_weight_t(), G);
+
+      std::vector<std::pair<vertexIndexType, edgeType>> ret;
+      auto outEdgeIters = boost::out_edges(toDescriptor[v], G);
+      if(outEdgeIters.first == outEdgeIters.second) {
+        std::cout << "... nothing!" << std::endl;
+      }
+      else for(; outEdgeIters.first != outEdgeIters.second; ++outEdgeIters.first){
+        ret.push_back(std::make_pair(toVit[(*outEdgeIters.first).m_target], 
+              EdgeWeightMap[*outEdgeIters.first]));
+      }
+      return ret;
+
+      //return boost::out_edges(toDescriptor[v], G); 
     }
 
     typename graphType::vertex_bundled& getVertex(vertexIndexType v){
@@ -93,7 +113,7 @@ class BGraph{
       {
         auto vertices = boost::vertices(G);
         for(; vertices.first != vertices.second; ++vertices.first){
-          std::cout << *vertices.first << "번 vertex 가 존재" << std::endl;
+          std::cout << toVit[*vertices.first] << "번 vertex 가 존재" << std::endl;
         }
       }
       std::cout << std::endl;
@@ -103,7 +123,7 @@ class BGraph{
         auto edges = boost::edges(G);
         for(; edges.first != edges.second; ++edges.first){
           auto tt = *edges.first;
-          std::cout << (*edges.first).m_source << "===>" << (*edges.first).m_target;
+          std::cout << toVit[(*edges.first).m_source] << "===>" << toVit[(*edges.first).m_target];
           std::cout << "===> weight : " << EdgeWeightMap[*edges.first] << std::endl;
         }
       }
@@ -114,14 +134,14 @@ class BGraph{
       {
         auto vertices = boost::vertices(G);
         for(; vertices.first != vertices.second; ++vertices.first){
-          std::cout << *vertices.first << "번 vertex 가 존재" << std::endl;
+          std::cout << toVit[*vertices.first] << "번 vertex 가 존재" << std::endl;
 
           auto outEdgeIters = boost::out_edges(*vertices.first, G);
           if(outEdgeIters.first == outEdgeIters.second) {
             std::cout << "... nothing!" << std::endl;
           }
           else for(; outEdgeIters.first != outEdgeIters.second; ++outEdgeIters.first){
-            std::cout << "... ===>" << (*outEdgeIters.first).m_target << std::endl;
+            std::cout << "... ===>" << toVit[(*outEdgeIters.first).m_target] << std::endl;
           }
         }
       } 
@@ -131,7 +151,7 @@ class BGraph{
       auto edgeWeightMap = get(boost::edge_weight_t(), G);
 
       for(; outEdgeIter.first != outEdgeIter.second; ++outEdgeIter.first){
-        f((*outEdgeIter.first).m_source, (*outEdgeIter.first).m_target, 
+        f(toVit[(*outEdgeIter.first).m_source], toVit[(*outEdgeIter.first).m_target], 
             edgeWeightMap[*outEdgeIter.first]); 
       }
     }
