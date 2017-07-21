@@ -5,7 +5,7 @@ using namespace std;
 int N, M;
 const int MAX_V = 1001;
 
-BGraph<int, int> graph;
+SimpleGraph graph;
 int visit[MAX_V];
 int backMatch[MAX_V];
 int dfs(int s){
@@ -37,8 +37,7 @@ int main(){
         }
     }
 
-    graph.print();
-
+    graph.print(); 
     int matchCnt = 0;
     fill_n(backMatch, MAX_V, -1);
     
@@ -51,6 +50,5 @@ int main(){
     cout << matchCnt << endl;
 
     return 0;
-    // 2016. 09. 16. (금) 03:22:50 KST
 }
 

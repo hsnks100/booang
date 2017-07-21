@@ -77,9 +77,7 @@ class BGraph{
         ret.push_back(std::make_pair(toVit[(*outEdgeIters.first).m_target], 
               EdgeWeightMap[*outEdgeIters.first]));
       }
-      return ret;
-
-      //return boost::out_edges(toDescriptor[v], G); 
+      return ret; 
     }
 
     typename graphType::vertex_bundled& getVertex(vertexIndexType v){
