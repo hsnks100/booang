@@ -19,23 +19,15 @@ bool canMatch(int from) {
     if(visited[from])
         return false;
     visited[from] = true; 
-
-
     auto edges = g[from]; 
-
     for (auto& j : edges) { 
         int to = j.first; 
-        if (visited[to] == true) continue; 
-
-        visited[to] = true; 
-
         if ( B[to] == -1 || canMatch(B[to]) ) { 
             A[from] = to; 
             B[to] = from; 
             return true; 
         } 
     } 
-
     return false; 
 } 
 
@@ -46,10 +38,6 @@ int main() {
     // make books vertex(left) 
 
     for (int i = 1; i <= 1000 ; i++) g.addVertex(i); 
-
-     //make person vertex(right) 
-    //for (int i = 0; i < M; i++) g.addVertex(i + N); 
-
     // make edges 
     for (int i = 1; i <= M; i++) { 
         int startN, endN; 
@@ -66,7 +54,6 @@ int main() {
     for (int i = 1; i <= N; i++) { 
         // try matching not matching person. 
         fill_n(visited, 1000, false);
-        //memset(visited, -1, sizeof(visited)); 
         if (canMatch(i)) match++; 
     } 
     cout << match << endl; 
