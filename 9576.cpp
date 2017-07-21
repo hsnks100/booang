@@ -1,76 +1,74 @@
-/* not perfect, but run */
-#include <iostream>
-#include <cstdio>
-#include <cstring>
-#include <fstream>
-#include <string>
-#include "booang.hpp"
-using namespace std;
+/* not run */ 
+#include <iostream> 
+#include <cstdio> 
+#include <cstring> 
+#include <fstream> 
+#include <string> 
+#include "Booang.hpp" 
+using namespace std; 
 
-int N, M;
-int A[1000], B[1000];
-bool visited[1000];
+int N, M; 
+int A[1000], B[1000]; 
+bool visited[1000]; 
 
-const int INF = 999999999;
+const int INF = 999999999; 
 
-BGraph<int, int> g;
+BGraph<int, int> g; 
 
-bool canMatch(int from) {
-	visited[from] = true;
+bool canMatch(int from) { 
+    if(visited[from])
+        return false;
+    visited[from] = true; 
 
-	auto edges = g[from];
 
-	for (auto& j : edges) {
-		int to = j.first;
-		if (visited[to] == true) continue;
+    auto edges = g[from]; 
 
-		visited[to] = true;
+    for (auto& j : edges) { 
+        int to = j.first; 
+        if (visited[to] == true) continue; 
 
-		if ( B[to] == -1 || canMatch(B[to]) ) {
-			A[from] = to;
-			B[to] = from;
-			return true;
-		}
-	}
+        visited[to] = true; 
 
-	return false;
-}
+        if ( B[to] == -1 || canMatch(B[to]) ) { 
+            A[from] = to; 
+            B[to] = from; 
+            return true; 
+        } 
+    } 
 
-int main() {
-	ifstream fin("1.txt");
-	fin >> N >> M;
+    return false; 
+} 
 
-	// make books vertex(left)
-	for (int i = 0; i < N; i++) g.addVertex(i);
+#define fin cin
+int main() { 
+    fin >> N >> M; 
 
-	// make person vertex(right)
-	for (int i = 0; i < M; i++) g.addVertex(i + N);
+    // make books vertex(left) 
 
-	// make edges
-	for (int i = 0; i < M; i++) {
-		int startN, endN; fin >> startN >> endN;
-		startN--; endN--;
-		for (int j = 0; j < N; j++) {
-			// correct book number
-			if (startN <= j && j <= endN) {
-				g.addEdge(  i  , N + j, 1);
-				g.addEdge(N + j,   i  , 1);
-			}
-			else {
-				g.addEdge(  i  , N + j, INF);
-				g.addEdge(N + j,   i  , INF);
-			}
-		}
-	} // end of make graph
-	memset(A, -1, sizeof(A));
-	memset(B, -1, sizeof(B));
+    for (int i = 1; i <= 1000 ; i++) g.addVertex(i); 
 
-	int match = 0;
-	for (int i = 0; i < N; i++) {
-		// try matching not matching person.
-		memset(visited, -1, sizeof(visited));
-		if (canMatch(i)) match++;
-	}
-	cout << match << endl;
+     //make person vertex(right) 
+    //for (int i = 0; i < M; i++) g.addVertex(i + N); 
+
+    // make edges 
+    for (int i = 1; i <= M; i++) { 
+        int startN, endN; 
+        fin >> startN >> endN; 
+        for(int j=startN; j<=endN; j++) {
+            cout << "addedge" << i << ", " << j << endl;
+            g.addEdge(i, j);
+        }
+    } // end of make graph 
+    memset(A, -1, sizeof(A)); 
+    memset(B, -1, sizeof(B)); 
+
+    int match = 0; 
+    for (int i = 1; i <= N; i++) { 
+        // try matching not matching person. 
+        fill_n(visited, 1000, false);
+        //memset(visited, -1, sizeof(visited)); 
+        if (canMatch(i)) match++; 
+    } 
+    cout << match << endl; 
 
 }
