@@ -73,10 +73,10 @@ class BGraph{
 
       std::vector<std::pair<vertexIndexType, edgeType>> ret;
       auto outEdgeIters = boost::out_edges(toDescriptor[v], G);
-      if(outEdgeIters.first == outEdgeIters.second) {
-        std::cout << "... nothing!" << std::endl;
-      }
-      else for(; outEdgeIters.first != outEdgeIters.second; ++outEdgeIters.first){
+      bool vertexisExist = outEdgeIters.first != outEdgeIters.second;
+      assert(vertexisExist);
+
+      for(; outEdgeIters.first != outEdgeIters.second; ++outEdgeIters.first){
         ret.push_back(std::make_pair(toVit[(*outEdgeIters.first).m_target], 
               EdgeWeightMap[*outEdgeIters.first]));
       }
