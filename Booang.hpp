@@ -10,7 +10,7 @@
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 
 
-template<typename edgeType, typename vertexProperty, typename vertexIndexType = int>
+template<typename edgeType = int, typename vertexProperty = int, typename vertexIndexType = int>
 class BGraph{
   public:
     typedef boost::adjacency_list<
@@ -24,9 +24,6 @@ class BGraph{
 
     std::map<vertexIndexType, typename graphType::vertex_descriptor> toDescriptor;
     std::map<typename graphType::vertex_descriptor, vertexIndexType> toVit;
-    //std::map<vertexIndexType, int> toDescriptor;
-    // typedef typename boost::graph_traits < graphType >::vertex_descriptor vertex_descriptor;
-    // typedef typename boost::graph_traits < graphType >::edge_descriptor edge_descriptor;
 
     graphType G;
 
@@ -190,4 +187,4 @@ class BGraph{
     }
 };
 
-
+typedef BGraph<int, int> SimpleGraph;
