@@ -1,8 +1,9 @@
-/* not run */
+/* not perfect, but run */
 #include <iostream>
-#include <vector>
 #include <cstdio>
 #include <cstring>
+#include <fstream>
+#include <string>
 #include "booang.hpp"
 using namespace std;
 
@@ -10,91 +11,66 @@ int N, M;
 int A[1000], B[1000];
 bool visited[1000];
 
+const int INF = 999999999;
+
 BGraph<int, int> g;
 
-bool canMatch(int a) {
-  visited[a] = true;
+bool canMatch(int from) {
+	visited[from] = true;
 
-  if (B[a] == -1 || !visited[B[b]] && canMatch(B[b])) {
+	auto edges = g[from];
 
-  }
-}
+	for (auto& j : edges) {
+		int to = j.first;
+		if (visited[to] == true) continue;
 
-int main() {
-  cin >> N >> M;
+		visited[to] = true;
 
-  // make person's vertex(left)
-  for (int i = 0; i < N; i++) g.addVertex(i);
-
-  // make books vertex(right)
-  for (int i = 0; i < M; i++) g.addVertex(i+N);
-
-  for (int i = 0; i < M; i++) {
-    int startN, endN; cin >> startN >> endN;
-
-    for (int j = startN - 1; j < endN; j++) {
-      // i person has all edges between [startN, endN]
-      // weight is 1 for all
-      g.addEdge(i    , N + j, 1);
-      g.addEdge(N + j, i    , 1);
-    }
-  } // end of make graph
-
-  g.print();
-
-  int match = 0;
-  for (int i = 0; i < N; i++) {
-    // try matching not matching person.
-    memset(visited, -1, sizeof(visited));
-    if (canMatch(i)) match++;
-  }
-
-}
-
-/* original code
-#include <cstdio>
-#include <cstring>
-#include <vector>
-using namespace std;
-
-int N, M, matchA[1000], matchB[1000];
-vector<int> adj[1000];
-bool visited[1000];
-
-bool BipertiteMatch(int A){
-	for(int B: adj[A]){
-		if(visited[B]) continue;
-		visited[B] = true;
-		if(matchB[B]==-1 || BipertiteMatch(matchB[B])){
-			matchA[A] = B;
-			matchB[B] = A;
+		if ( B[to] == -1 || canMatch(B[to]) ) {
+			A[from] = to;
+			B[to] = from;
 			return true;
 		}
 	}
+
 	return false;
 }
 
-int main(){
-	int T;
-	scanf("%d", &T);
-	for(int t=0; t<T; t++){
-		scanf("%d %d", &N, &M);
-		for(int i=0; i<M; i++){
-			int A, B;
-			scanf("%d %d", &A, &B);
-			adj[i].clear();
-			for(int j=A-1; j<B; j++) {
-				adj[i].push_back(j);
+int main() {
+	ifstream fin("1.txt");
+	fin >> N >> M;
+
+	// make books vertex(left)
+	for (int i = 0; i < N; i++) g.addVertex(i);
+
+	// make person vertex(right)
+	for (int i = 0; i < M; i++) g.addVertex(i + N);
+
+	// make edges
+	for (int i = 0; i < M; i++) {
+		int startN, endN; fin >> startN >> endN;
+		startN--; endN--;
+		for (int j = 0; j < N; j++) {
+			// correct book number
+			if (startN <= j && j <= endN) {
+				g.addEdge(  i  , N + j, 1);
+				g.addEdge(N + j,   i  , 1);
+			}
+			else {
+				g.addEdge(  i  , N + j, INF);
+				g.addEdge(N + j,   i  , INF);
 			}
 		}
-		memset(matchA, -1, sizeof(matchA));
-		memset(matchB, -1, sizeof(matchB));
-		int result = 0;
-		for(int i=0; i<M; i++){
-			memset(visited, 0, sizeof(visited));
-			result += BipertiteMatch(i);
-		}
-		printf("%d\n", result);
+	} // end of make graph
+	memset(A, -1, sizeof(A));
+	memset(B, -1, sizeof(B));
+
+	int match = 0;
+	for (int i = 0; i < N; i++) {
+		// try matching not matching person.
+		memset(visited, -1, sizeof(visited));
+		if (canMatch(i)) match++;
 	}
+	cout << match << endl;
+
 }
-*/
