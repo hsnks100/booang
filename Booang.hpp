@@ -1,7 +1,8 @@
 // STL
 #include <iostream>                  // for std::cout 
 #include <cassert>
-#include <vector>
+#include <vector> 
+#include <type_traits> 
 
 // Boost
 #include <boost/graph/adjacency_list.hpp> // for customizable graphs
@@ -10,7 +11,7 @@
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 
 
-template<typename edgeType = int, typename vertexProperty = int, typename vertexIndexType = int>
+template<typename edgeType, typename vertexProperty = boost::no_property, typename vertexIndexType = int>
 class BGraph{
   public:
     typedef boost::adjacency_list<
@@ -33,13 +34,19 @@ class BGraph{
         toVit[toDescriptor[v0]] = v0;
       }
     }
+    void addVertex(vertexIndexType v0, const vertexProperty& vp) {
+      if(toDescriptor.find(v0) == toDescriptor.end()) {
+        toDescriptor[v0] = boost::add_vertex(vp, G); 
+        toVit[toDescriptor[v0]] = v0;
+      }
+    }
     void removeVertex(vertexIndexType v0) {
       bool isExist = toDescriptor.find(v0) != toDescriptor.end();
       assert(isExist == true);
       boost::remove_vertex(toDescriptor[v0], G);
       toVit.erase(toVit.find(toDescriptor[v0]));
       toDescriptor.erase(v0);
-    }
+    } 
 
     void addEdge(vertexIndexType v0, 
         vertexIndexType v1, edgeType e) {
@@ -86,11 +93,23 @@ class BGraph{
     typename graphType::edge_bundled& operator[](typename graphType::edge_descriptor e)
     { return get(boost::edge_bundle, G)[e]; }
 
-    edgeType getWeight(vertexIndexType v0, vertexIndexType v1, edgeType defaultValue = 1e8){
+
+    bool hasEdge(vertexIndexType v0, vertexIndexType v1) {
+      std::pair<edge_descriptor, bool> ed = boost::edge(toDescriptor[v0], toDescriptor[v1], G); 
+      return ed.second; 
+    }
+
+
+    edgeType getWeight(vertexIndexType v0, vertexIndexType v1) {
+
+      static_assert(!is_same<edgeType, boost::no_property>::value, "edgeType must not be boost::no_property");
       std::pair<edge_descriptor, bool> ed = boost::edge(toDescriptor[v0], toDescriptor[v1], G); 
       edgeType weight = get(boost::edge_weight_t(), G, ed.first);
       return weight;
+      //return boost::no_property();
     }
+
+
 
     edgeType putWeight(vertexIndexType v0, vertexIndexType v1, edgeType weight){
       std::pair<edge_descriptor, bool> ed = boost::edge(toDescriptor[v0], toDescriptor[v1], G);
@@ -103,44 +122,6 @@ class BGraph{
       }
     }
 
-    void print(){ 
-      std::cout << "vertex list" << std::endl << std::endl;
-      {
-        auto vertices = boost::vertices(G);
-        for(; vertices.first != vertices.second; ++vertices.first){
-          std::cout << toVit[*vertices.first] << "번 vertex 가 존재" << std::endl;
-        }
-      }
-      std::cout << std::endl;
-      std::cout << "edge list" << std::endl;
-      {
-        auto EdgeWeightMap = get(boost::edge_weight_t(), G);
-        auto edges = boost::edges(G);
-        for(; edges.first != edges.second; ++edges.first){
-          auto tt = *edges.first;
-          std::cout << toVit[(*edges.first).m_source] << "===>" << toVit[(*edges.first).m_target];
-          std::cout << "===> weight : " << EdgeWeightMap[*edges.first] << std::endl;
-        }
-      }
-      std::cout << "---------------------------------------" << std::endl;
-      std::cout << std::endl;
-
-      std::cout << "edge list each vertex" << std::endl;
-      {
-        auto vertices = boost::vertices(G);
-        for(; vertices.first != vertices.second; ++vertices.first){
-          std::cout << toVit[*vertices.first] << "번 vertex 가 존재" << std::endl;
-
-          auto outEdgeIters = boost::out_edges(*vertices.first, G);
-          if(outEdgeIters.first == outEdgeIters.second) {
-            std::cout << "... nothing!" << std::endl;
-          }
-          else for(; outEdgeIters.first != outEdgeIters.second; ++outEdgeIters.first){
-            std::cout << "... ===>" << toVit[(*outEdgeIters.first).m_target] << std::endl;
-          }
-        }
-      } 
-    } 
     void loopOutEdges(vertexIndexType v, const std::function<void(int, int, edgeType)>& f){
       auto outEdgeIter = boost::out_edges(toDescriptor[v], G); 
       auto edgeWeightMap = get(boost::edge_weight_t(), G);
@@ -183,6 +164,68 @@ class BGraph{
       }
       std::cout << std::endl;
     }
+    void print() { 
+      std::cout << "vertex list" << std::endl << std::endl;
+      {
+        auto vertices = boost::vertices(G);
+        for(; vertices.first != vertices.second; ++vertices.first){
+          std::cout << toVit[*vertices.first] << "번 vertex 가 존재" << std::endl;
+        }
+      }
+      std::cout << std::endl;
+      printEdgeList();
+      std::cout << "---------------------------------------" << std::endl;
+      std::cout << std::endl;
+
+      std::cout << "edge list each vertex" << std::endl;
+      {
+        auto vertices = boost::vertices(G);
+        for(; vertices.first != vertices.second; ++vertices.first){
+          std::cout << toVit[*vertices.first] << "번 vertex 가 존재" << std::endl;
+
+          auto outEdgeIters = boost::out_edges(*vertices.first, G);
+          if(outEdgeIters.first == outEdgeIters.second) {
+            std::cout << "... nothing!" << std::endl;
+          }
+          else for(; outEdgeIters.first != outEdgeIters.second; ++outEdgeIters.first){
+            std::cout << "... ===>" << toVit[(*outEdgeIters.first).m_target] << std::endl;
+          }
+        }
+      } 
+    }
+
+    template<typename U = edgeType>
+    typename std::enable_if<!std::is_same<U, boost::no_property>::value, void>::type printEdgeList() { 
+      std::cout << "edge list" << std::endl;
+      {
+        auto EdgeWeightMap = get(boost::edge_weight_t(), G);
+        auto edges = boost::edges(G);
+        for(; edges.first != edges.second; ++edges.first){
+          auto tt = *edges.first;
+          std::cout << toVit[(*edges.first).m_source] << "===>" << toVit[(*edges.first).m_target];
+          std::cout << "type : " << typeid(EdgeWeightMap[*edges.first]).name() << std:: endl;
+          std::cout << "===> weight : " << EdgeWeightMap[*edges.first] << std::endl;
+        }
+      }
+    }
+    template<typename U = edgeType>
+    typename std::enable_if<std::is_same<U, boost::no_property>::value, void>::type printEdgeList() { 
+      std::cout << "edge list" << std::endl;
+      {
+        auto EdgeWeightMap = get(boost::edge_weight_t(), G);
+        auto edges = boost::edges(G);
+        for(; edges.first != edges.second; ++edges.first){
+          auto tt = *edges.first;
+          std::cout << toVit[(*edges.first).m_source] << "===>" << toVit[(*edges.first).m_target];
+          std::cout << "type : " << typeid(EdgeWeightMap[*edges.first]).name() << std:: endl;
+          //std::cout << "===> weight : " << EdgeWeightMap[*edges.first] << std::endl;
+        }
+      }
+    }
 };
 
-typedef BGraph<int, int> SimpleGraph;
+
+
+
+typedef BGraph<int> PropGraph;
+typedef BGraph<boost::no_property> SimpleGraph;
