@@ -12,12 +12,20 @@
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 
 
+#include <boost/graph/graph_traits.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/dijkstra_shortest_paths.hpp>
+#include <boost/property_map/property_map.hpp>
+
+
+
+
 template<typename edgeType, typename vertexProperty = boost::no_property, typename vertexIndexType = int>
 class BGraph{
   public:
     typedef boost::adjacency_list<
-      boost::setS,
-      boost::listS, 
+      boost::listS,
+      boost::vecS, 
       boost::directedS, 
       vertexProperty,
       boost::property<boost::edge_weight_t, edgeType>> graphType;
@@ -43,6 +51,7 @@ class BGraph{
       }
     }
     void removeVertex(vertexIndexType v0) {
+      assert(false);
       bool isExist = toDescriptor.find(v0) != toDescriptor.end();
       assert(isExist == true);
       boost::remove_vertex(toDescriptor[v0], G);
@@ -145,35 +154,48 @@ class BGraph{
 
     void loopAllVertices(){
     }
-    void dijk(vertexIndexType v0){
-      // Create things for Dijkstra
-      //
-      typedef std::pair<int, int> Edge;
 
-      typedef graph_traits < graphType >::vertex_descriptor vertex_descriptor;
+    // type 에 대한 SFINAE 적용이 필요함.
+    void dijk(vertexIndexType v0){ 
+      using namespace boost;
 
-      std::vector<vertex_descriptor> parents(boost::num_vertices(G)); // To store parents
-      std::vector<int> distances(boost::num_vertices(G)); // To store distances
+      auto& g = G;
+      std::vector<vertex_descriptor> p(num_vertices(g));
+      std::vector<int> d(num_vertices(g));
+      dijkstra_shortest_paths(g, toDescriptor[v0],
+          predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, g))).
+          distance_map(boost::make_iterator_property_map(d.begin(), get(boost::vertex_index, g)))); 
 
-      std::vector<vertex_descriptor> p(num_vertices(G));
-      std::vector<int> d(num_vertices(G));
-      vertex_descriptor s = toDescriptor[v0]; // vertex(A, g);
-
-      boost::dijkstra_shortest_paths(G, s,
-          boost::predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, G))).
-          distance_map(boost::make_iterator_property_map(d.begin(), get(boost::vertex_index, G))));
-
-      //boost::dijkstra_shortest_paths(G, toDescriptor[v0], 
-          //boost::predecessor_map(&parents[0]).distance_map(&distances[0]));
-
-      //std::cout << "distances and parents:" << std::endl;
-      //typename boost::graph_traits < graphType >::vertex_iterator vertexIterator, vend;
-      //for (boost::tie(vertexIterator, vend) = boost::vertices(G); vertexIterator != vend; ++vertexIterator) 
-      //{
-        //std::cout << "distance(" << *vertexIterator << ") = " << distances[*vertexIterator] << ", ";
-        //std::cout << "parent(" << *vertexIterator << ") = " << parents[*vertexIterator] << std::endl;
-      //}
+      std::cout << "distances and parents:" << std::endl;
+      typename graph_traits < graphType >::vertex_iterator vi, vend;
+      for (boost::tie(vi, vend) = vertices(g); vi != vend; ++vi) {
+        std::cout << "distance(" << ") = " << d[*vi] << ", ";
+        //std::cout << g[*vi].Id << std::endl;
+        //std::cout << "parent(" << << ") = " << name[p[*vi]] << std::
+          //endl;
+      }
       //std::cout << std::endl;
+      //auto s2 = add_vertex({"2"}, g);
+      //auto s3 = add_vertex({"3"}, g);
+      //auto s4 = add_vertex({"4"}, g);
+      //auto s5 = add_vertex({"5"}, g);
+
+
+      //typename property_map<graph_t, vertex_distance_t>::type
+        //d = get(vertex_distance, g);
+      //typename property_map<graph_t, vertex_predecessor_t>::type
+        //p = get(vertex_predecessor, g);
+      //dijkstra_shortest_paths(g, s, predecessor_map(p).distance_map(d));
+      //add_edge(s, s2, 1);
+      //add_edge(s, s3, 2);
+      //add_edge(s, s4, 3);
+      //add_edge(s, s5, 4);
+
+      //std::vector<vertex_descriptor> p( boost::num_vertices(g));
+      //std::vector<float> d( boost::num_vertices(g)); //here you should use type of a field, not a structure itself
+
+      //boost::dijkstra_shortest_paths(g, s, boost::weight_map(get(edge_weight, g))
+          //.predecessor_map(&p[0])); 
     }
 
     auto getAllVertices() {
