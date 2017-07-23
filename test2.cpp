@@ -1,49 +1,31 @@
 // https://www.acmicpc.net/problem/11404 
-#include <iostream>
-using namespace std;
 
+#include <iostream>
+#include <string>
 #include "Booang.hpp"
 
-
-
-/*
-
-   addVertex 시에 원하는 vertex descriptor 는 지정할 수 없는 문제가 있음.
-
-   만약 1000 번 부터 시작되는 그런 vertex 나 vertex index 가 난장판이면
-   어떡함???
-
-*/
 int main(){
-  struct VertexProperty{
-    int Id;
-    VertexProperty(int id) : Id(id) {}
-    VertexProperty(){}
-  };
-
-  BGraph<int, VertexProperty> G; 
-  for(int i=1; i<=6; i++) {
-    G.addVertex(i);
-  }
-  G.addVertex(7, VertexProperty(1000));
-
-  G.addEdge(1, 2, 1000);
-  G.addEdge(2, 3, 2000);
-  G.addEdge(5, 6, 3000);
-
-  //G.getVertex(7);
-
-  G.print();
+  //SimpleGraph G1;
+  //G1.addVertex(1);
+  //G1.addVertex(2);
+  //G1.addVertex(3);
+  //G1.addVertex(4);
+  //G1.addEdge(1, 2);
+  //G1.addEdge(1, 4);
+  //G1.addEdge(3, 4); 
+  //G1.dijk(1); 
 
 
-  cout << "try remove!!\n";
-  G.removeEdge(1, 2);
-  G.removeVertex(5);
-  cout << "befoe print" << endl;
-  G.print();
+  WeightedGraph G2;
+  G2.addVertex(1);
+  G2.addVertex(2);
+  G2.addVertex(3);
+  G2.addVertex(4);
+  //G2.addEdge(1, 2);
+  G2.addEdge(1, 4, 1000);
+  //G2.addEdge(3, 4); 
 
-
-
+  G2.dijk(1); 
   return 0;
 }
 
