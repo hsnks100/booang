@@ -3,6 +3,7 @@
 #include <cassert>
 #include <vector> 
 #include <type_traits> 
+//using namespace std;
 
 // Boost
 #include <boost/graph/adjacency_list.hpp> // for customizable graphs
@@ -15,7 +16,8 @@ template<typename edgeType, typename vertexProperty = boost::no_property, typena
 class BGraph{
   public:
     typedef boost::adjacency_list<
-      boost::setS, boost::listS, 
+      boost::setS,
+      boost::listS, 
       boost::directedS, 
       vertexProperty,
       boost::property<boost::edge_weight_t, edgeType>> graphType;
@@ -102,13 +104,12 @@ class BGraph{
 
     edgeType getWeight(vertexIndexType v0, vertexIndexType v1) {
 
-      static_assert(!is_same<edgeType, boost::no_property>::value, "edgeType must not be boost::no_property");
+      static_assert(!std::is_same<edgeType, boost::no_property>::value, "edgeType must not be boost::no_property");
       std::pair<edge_descriptor, bool> ed = boost::edge(toDescriptor[v0], toDescriptor[v1], G); 
       edgeType weight = get(boost::edge_weight_t(), G, ed.first);
       return weight;
       //return boost::no_property();
-    }
-
+    } 
 
 
     edgeType putWeight(vertexIndexType v0, vertexIndexType v1, edgeType weight){
@@ -148,22 +149,43 @@ class BGraph{
       // Create things for Dijkstra
       //
       typedef std::pair<int, int> Edge;
+
+      typedef graph_traits < graphType >::vertex_descriptor vertex_descriptor;
+
       std::vector<vertex_descriptor> parents(boost::num_vertices(G)); // To store parents
       std::vector<int> distances(boost::num_vertices(G)); // To store distances
 
-      // Compute shortest paths from v0 to all vertices, and store the output in parents and distances
-      boost::dijkstra_shortest_paths(G, toDescriptor[v0], boost::predecessor_map(&parents[0]).distance_map(&distances[0]));
+      std::vector<vertex_descriptor> p(num_vertices(G));
+      std::vector<int> d(num_vertices(G));
+      vertex_descriptor s = toDescriptor[v0]; // vertex(A, g);
 
-      // Output results
-      std::cout << "distances and parents:" << std::endl;
-      typename boost::graph_traits < graphType >::vertex_iterator vertexIterator, vend;
-      for (boost::tie(vertexIterator, vend) = boost::vertices(G); vertexIterator != vend; ++vertexIterator) 
-      {
-        std::cout << "distance(" << *vertexIterator << ") = " << distances[*vertexIterator] << ", ";
-        std::cout << "parent(" << *vertexIterator << ") = " << parents[*vertexIterator] << std::endl;
-      }
-      std::cout << std::endl;
+      boost::dijkstra_shortest_paths(G, s,
+          boost::predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, G))).
+          distance_map(boost::make_iterator_property_map(d.begin(), get(boost::vertex_index, G))));
+
+      //boost::dijkstra_shortest_paths(G, toDescriptor[v0], 
+          //boost::predecessor_map(&parents[0]).distance_map(&distances[0]));
+
+      //std::cout << "distances and parents:" << std::endl;
+      //typename boost::graph_traits < graphType >::vertex_iterator vertexIterator, vend;
+      //for (boost::tie(vertexIterator, vend) = boost::vertices(G); vertexIterator != vend; ++vertexIterator) 
+      //{
+        //std::cout << "distance(" << *vertexIterator << ") = " << distances[*vertexIterator] << ", ";
+        //std::cout << "parent(" << *vertexIterator << ") = " << parents[*vertexIterator] << std::endl;
+      //}
+      //std::cout << std::endl;
     }
+
+    auto getAllVertices() {
+      auto vertices = boost::vertices(G);
+
+      std::vector<vertexIndexType> ret;
+      for(; vertices.first != vertices.second; ++vertices.first){ 
+        ret.push_back(toVit[*vertices.first]);
+      } 
+      return ret;
+    }
+
     void print() { 
       std::cout << "vertex list" << std::endl << std::endl;
       {
@@ -177,21 +199,21 @@ class BGraph{
       std::cout << "---------------------------------------" << std::endl;
       std::cout << std::endl;
 
-      std::cout << "edge list each vertex" << std::endl;
-      {
-        auto vertices = boost::vertices(G);
-        for(; vertices.first != vertices.second; ++vertices.first){
-          std::cout << toVit[*vertices.first] << "번 vertex 가 존재" << std::endl;
+      //std::cout << "edge list each vertex" << std::endl;
+      //{
+        //auto vertices = boost::vertices(G);
+        //for(; vertices.first != vertices.second; ++vertices.first){
+          //std::cout << toVit[*vertices.first] << "번 vertex 가 존재" << std::endl;
 
-          auto outEdgeIters = boost::out_edges(*vertices.first, G);
-          if(outEdgeIters.first == outEdgeIters.second) {
-            std::cout << "... nothing!" << std::endl;
-          }
-          else for(; outEdgeIters.first != outEdgeIters.second; ++outEdgeIters.first){
-            std::cout << "... ===>" << toVit[(*outEdgeIters.first).m_target] << std::endl;
-          }
-        }
-      } 
+          //auto outEdgeIters = boost::out_edges(*vertices.first, G);
+          //if(outEdgeIters.first == outEdgeIters.second) {
+            //std::cout << "... nothing!" << std::endl;
+          //}
+          //else for(; outEdgeIters.first != outEdgeIters.second; ++outEdgeIters.first){
+            //std::cout << "... ===>" << toVit[(*outEdgeIters.first).m_target] << std::endl;
+          //}
+        //}
+      //} 
     }
 
     template<typename U = edgeType>
@@ -202,8 +224,7 @@ class BGraph{
         auto edges = boost::edges(G);
         for(; edges.first != edges.second; ++edges.first){
           auto tt = *edges.first;
-          std::cout << toVit[(*edges.first).m_source] << "===>" << toVit[(*edges.first).m_target];
-          std::cout << "type : " << typeid(EdgeWeightMap[*edges.first]).name() << std:: endl;
+          std::cout << toVit[(*edges.first).m_source] << "===>" << toVit[(*edges.first).m_target] << std::endl;
           std::cout << "===> weight : " << EdgeWeightMap[*edges.first] << std::endl;
         }
       }
@@ -216,16 +237,12 @@ class BGraph{
         auto edges = boost::edges(G);
         for(; edges.first != edges.second; ++edges.first){
           auto tt = *edges.first;
-          std::cout << toVit[(*edges.first).m_source] << "===>" << toVit[(*edges.first).m_target];
-          std::cout << "type : " << typeid(EdgeWeightMap[*edges.first]).name() << std:: endl;
+          std::cout << toVit[(*edges.first).m_source] << "===>" << toVit[(*edges.first).m_target] << std::endl;
           //std::cout << "===> weight : " << EdgeWeightMap[*edges.first] << std::endl;
         }
       }
     }
-};
+}; 
 
-
-
-
-typedef BGraph<int> PropGraph;
 typedef BGraph<boost::no_property> SimpleGraph;
+typedef BGraph<int> WeightedGraph; 
