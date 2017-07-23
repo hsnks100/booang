@@ -1,0 +1,23 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+BGraph	Booang.hpp	/^class BGraph{$/;"	c
+G	Booang.hpp	/^    graphType G;$/;"	m	class:BGraph
+addEdge	Booang.hpp	/^    void addEdge(vertex_descriptor v0, $/;"	f	class:BGraph
+addVertex	Booang.hpp	/^    vertex_descriptor addVertex(){$/;"	f	class:BGraph
+dijk	Booang.hpp	/^    void dijk(vertex_descriptor v0){$/;"	f	class:BGraph
+edge_descriptor	Booang.hpp	/^    typedef typename graphType::edge_descriptor edge_descriptor;$/;"	t	class:BGraph
+getVertex	Booang.hpp	/^    typename graphType::vertex_bundled& getVertex(vertex_descriptor v){$/;"	f	class:BGraph
+getWeight	Booang.hpp	/^    edgeType getWeight(vertex_descriptor v0, vertex_descriptor v1, edgeType defaultValue = 1e8){$/;"	f	class:BGraph
+graphType	Booang.hpp	/^      boost::property<boost::edge_weight_t, edgeType>> graphType;$/;"	t	class:BGraph
+loopAllEdges	Booang.hpp	/^    void loopAllEdges(const std::function<bool(int, int, edgeType)>& f){ $/;"	f	class:BGraph
+loopAllVertices	Booang.hpp	/^    void loopAllVertices(){$/;"	f	class:BGraph
+loopOutEdges	Booang.hpp	/^    void loopOutEdges(vertex_descriptor v, const std::function<void(int, int, edgeType)>& f){$/;"	f	class:BGraph
+operator []	Booang.hpp	/^    auto operator[](vertex_descriptor v){$/;"	f	class:BGraph
+operator []	Booang.hpp	/^    typename graphType::edge_bundled& operator[](typename graphType::edge_descriptor e)$/;"	f	class:BGraph
+print	Booang.hpp	/^    void print(){ $/;"	f	class:BGraph
+putWeight	Booang.hpp	/^    edgeType putWeight(vertex_descriptor v0, vertex_descriptor v1, edgeType weight){$/;"	f	class:BGraph
+vertex_descriptor	Booang.hpp	/^    typedef typename graphType::vertex_descriptor vertex_descriptor;$/;"	t	class:BGraph

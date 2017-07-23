@@ -17,22 +17,26 @@ using namespace std;
 int main(){
   struct VertexProperty{
     int Id;
+    VertexProperty(int id) : Id(id) {}
+    VertexProperty(){}
   };
 
   BGraph<int, VertexProperty> G; 
   for(int i=1; i<=6; i++) {
     G.addVertex(i);
   }
+  G.addVertex(7, VertexProperty(1000));
 
   G.addEdge(1, 2, 1000);
   G.addEdge(2, 3, 2000);
   G.addEdge(5, 6, 3000);
 
+  //G.getVertex(7);
+
   G.print();
 
 
   cout << "try remove!!\n";
-  G.removeVertex(7);
   G.removeEdge(1, 2);
   G.removeVertex(5);
   cout << "befoe print" << endl;

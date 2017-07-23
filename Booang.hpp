@@ -3,6 +3,7 @@
 #include <cassert>
 #include <vector> 
 #include <type_traits> 
+//using namespace std;
 
 // Boost
 #include <boost/graph/adjacency_list.hpp> // for customizable graphs
@@ -11,40 +12,51 @@
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 
 
-template<typename edgeType, typename vertexProperty = boost::no_property, typename vertexIndexType = int>
+template<
+  typename edgeType, 
+  typename vertexProperty = boost::property<boost::vertex_index_t, int>,
+  typename vertexIndexType = int>
 class BGraph{
   public:
     typedef boost::adjacency_list<
-      boost::setS, boost::listS, 
+      boost::setS,
+      boost::listS, 
       boost::directedS, 
       vertexProperty,
       boost::property<boost::edge_weight_t, edgeType>> graphType;
 
     typedef typename graphType::vertex_descriptor vertex_descriptor;
     typedef typename graphType::edge_descriptor edge_descriptor;
+    typedef typename boost::property_map<graphType, boost::vertex_index_t>::type iMapType;
 
-    std::map<vertexIndexType, typename graphType::vertex_descriptor> toDescriptor;
-    std::map<typename graphType::vertex_descriptor, vertexIndexType> toVit;
-
+    std::map<vertexIndexType, typename graphType::vertex_descriptor> toDescriptor; 
     graphType G;
+
+    void _addVertex(int vIndex) { 
+      toDescriptor[vIndex] = boost::add_vertex(vIndex, G); 
+    }
+    void _addEdge(int v0, 
+        int v1, edgeType e) {
+      boost::add_edge(toDescriptor[v0], toDescriptor[v1], e, G); 
+      //bool isExist = toDescriptor.find(v0) != toDescriptor.end() && 
+        //toDescriptor.find(v1) != toDescriptor.end();
+      //assert(isExist == true);
+    }
 
     void addVertex(vertexIndexType v0) {
       if(toDescriptor.find(v0) == toDescriptor.end()) {
         toDescriptor[v0] = boost::add_vertex(G); 
-        toVit[toDescriptor[v0]] = v0;
       }
     }
     void addVertex(vertexIndexType v0, const vertexProperty& vp) {
       if(toDescriptor.find(v0) == toDescriptor.end()) {
         toDescriptor[v0] = boost::add_vertex(vp, G); 
-        toVit[toDescriptor[v0]] = v0;
       }
     }
     void removeVertex(vertexIndexType v0) {
       bool isExist = toDescriptor.find(v0) != toDescriptor.end();
       assert(isExist == true);
       boost::remove_vertex(toDescriptor[v0], G);
-      toVit.erase(toVit.find(toDescriptor[v0]));
       toDescriptor.erase(v0);
     } 
 
@@ -79,9 +91,10 @@ class BGraph{
       auto outEdgeIters = boost::out_edges(toDescriptor[v], G);
       bool vertexisExist = outEdgeIters.first != outEdgeIters.second;
       assert(vertexisExist);
+      iMapType imap = boost::get(boost::vertex_index, G);
 
       for(; outEdgeIters.first != outEdgeIters.second; ++outEdgeIters.first){
-        ret.push_back(std::make_pair(toVit[(*outEdgeIters.first).m_target], 
+        ret.push_back(std::make_pair(imap[(*outEdgeIters.first).m_target], 
               EdgeWeightMap[*outEdgeIters.first]));
       }
       return ret; 
@@ -102,13 +115,12 @@ class BGraph{
 
     edgeType getWeight(vertexIndexType v0, vertexIndexType v1) {
 
-      static_assert(!is_same<edgeType, boost::no_property>::value, "edgeType must not be boost::no_property");
+      static_assert(!std::is_same<edgeType, boost::no_property>::value, "edgeType must not be boost::no_property");
       std::pair<edge_descriptor, bool> ed = boost::edge(toDescriptor[v0], toDescriptor[v1], G); 
       edgeType weight = get(boost::edge_weight_t(), G, ed.first);
       return weight;
       //return boost::no_property();
-    }
-
+    } 
 
 
     edgeType putWeight(vertexIndexType v0, vertexIndexType v1, edgeType weight){
@@ -125,9 +137,10 @@ class BGraph{
     void loopOutEdges(vertexIndexType v, const std::function<void(int, int, edgeType)>& f){
       auto outEdgeIter = boost::out_edges(toDescriptor[v], G); 
       auto edgeWeightMap = get(boost::edge_weight_t(), G);
+      iMapType imap = boost::get(boost::vertex_index, G);
 
       for(; outEdgeIter.first != outEdgeIter.second; ++outEdgeIter.first){
-        f(toVit[(*outEdgeIter.first).m_source], toVit[(*outEdgeIter.first).m_target], 
+        f(imap[(*outEdgeIter.first).m_source], imap[(*outEdgeIter.first).m_target], 
             edgeWeightMap[*outEdgeIter.first]); 
       }
     }
@@ -151,25 +164,37 @@ class BGraph{
       std::vector<vertex_descriptor> parents(boost::num_vertices(G)); // To store parents
       std::vector<int> distances(boost::num_vertices(G)); // To store distances
 
-      // Compute shortest paths from v0 to all vertices, and store the output in parents and distances
       boost::dijkstra_shortest_paths(G, toDescriptor[v0], boost::predecessor_map(&parents[0]).distance_map(&distances[0]));
 
-      // Output results
-      std::cout << "distances and parents:" << std::endl;
-      typename boost::graph_traits < graphType >::vertex_iterator vertexIterator, vend;
-      for (boost::tie(vertexIterator, vend) = boost::vertices(G); vertexIterator != vend; ++vertexIterator) 
-      {
-        std::cout << "distance(" << *vertexIterator << ") = " << distances[*vertexIterator] << ", ";
-        std::cout << "parent(" << *vertexIterator << ") = " << parents[*vertexIterator] << std::endl;
-      }
-      std::cout << std::endl;
+      //std::cout << "distances and parents:" << std::endl;
+      //typename boost::graph_traits < graphType >::vertex_iterator vertexIterator, vend;
+      //for (boost::tie(vertexIterator, vend) = boost::vertices(G); vertexIterator != vend; ++vertexIterator) 
+      //{
+        //std::cout << "distance(" << *vertexIterator << ") = " << distances[*vertexIterator] << ", ";
+        //std::cout << "parent(" << *vertexIterator << ") = " << parents[*vertexIterator] << std::endl;
+      //}
+      //std::cout << std::endl;
     }
+
+    auto getAllVertices() {
+      iMapType imap = boost::get(boost::vertex_index, G);
+      auto vertices = boost::vertices(G);
+
+      std::vector<vertexIndexType> ret;
+      for(; vertices.first != vertices.second; ++vertices.first){ 
+        ret.push_back(imap[*vertices.first]);
+      } 
+      return ret;
+    }
+
     void print() { 
+
+      iMapType imap = boost::get(boost::vertex_index, G);
       std::cout << "vertex list" << std::endl << std::endl;
       {
         auto vertices = boost::vertices(G);
         for(; vertices.first != vertices.second; ++vertices.first){
-          std::cout << toVit[*vertices.first] << "번 vertex 가 존재" << std::endl;
+          std::cout << imap[*vertices.first] << "번 vertex 가 존재" << std::endl;
         }
       }
       std::cout << std::endl;
@@ -177,55 +202,52 @@ class BGraph{
       std::cout << "---------------------------------------" << std::endl;
       std::cout << std::endl;
 
-      std::cout << "edge list each vertex" << std::endl;
-      {
-        auto vertices = boost::vertices(G);
-        for(; vertices.first != vertices.second; ++vertices.first){
-          std::cout << toVit[*vertices.first] << "번 vertex 가 존재" << std::endl;
+      //std::cout << "edge list each vertex" << std::endl;
+      //{
+        //auto vertices = boost::vertices(G);
+        //for(; vertices.first != vertices.second; ++vertices.first){
+          //std::cout << toVit[*vertices.first] << "번 vertex 가 존재" << std::endl;
 
-          auto outEdgeIters = boost::out_edges(*vertices.first, G);
-          if(outEdgeIters.first == outEdgeIters.second) {
-            std::cout << "... nothing!" << std::endl;
-          }
-          else for(; outEdgeIters.first != outEdgeIters.second; ++outEdgeIters.first){
-            std::cout << "... ===>" << toVit[(*outEdgeIters.first).m_target] << std::endl;
-          }
-        }
-      } 
+          //auto outEdgeIters = boost::out_edges(*vertices.first, G);
+          //if(outEdgeIters.first == outEdgeIters.second) {
+            //std::cout << "... nothing!" << std::endl;
+          //}
+          //else for(; outEdgeIters.first != outEdgeIters.second; ++outEdgeIters.first){
+            //std::cout << "... ===>" << toVit[(*outEdgeIters.first).m_target] << std::endl;
+          //}
+        //}
+      //} 
     }
 
     template<typename U = edgeType>
     typename std::enable_if<!std::is_same<U, boost::no_property>::value, void>::type printEdgeList() { 
       std::cout << "edge list" << std::endl;
+      iMapType imap = boost::get(boost::vertex_index, G);
       {
         auto EdgeWeightMap = get(boost::edge_weight_t(), G);
         auto edges = boost::edges(G);
         for(; edges.first != edges.second; ++edges.first){
           auto tt = *edges.first;
-          std::cout << toVit[(*edges.first).m_source] << "===>" << toVit[(*edges.first).m_target];
-          std::cout << "type : " << typeid(EdgeWeightMap[*edges.first]).name() << std:: endl;
+          std::cout << imap[(*edges.first).m_source] << "===>" << imap[(*edges.first).m_target] << std::endl;
           std::cout << "===> weight : " << EdgeWeightMap[*edges.first] << std::endl;
         }
       }
     }
     template<typename U = edgeType>
     typename std::enable_if<std::is_same<U, boost::no_property>::value, void>::type printEdgeList() { 
+      iMapType imap = boost::get(boost::vertex_index, G);
       std::cout << "edge list" << std::endl;
       {
         auto EdgeWeightMap = get(boost::edge_weight_t(), G);
         auto edges = boost::edges(G);
         for(; edges.first != edges.second; ++edges.first){
           auto tt = *edges.first;
-          std::cout << toVit[(*edges.first).m_source] << "===>" << toVit[(*edges.first).m_target];
-          std::cout << "type : " << typeid(EdgeWeightMap[*edges.first]).name() << std:: endl;
+          std::cout << imap[(*edges.first).m_source] << "===>" << imap[(*edges.first).m_target] << std::endl;
           //std::cout << "===> weight : " << EdgeWeightMap[*edges.first] << std::endl;
         }
       }
     }
-};
+}; 
 
-
-
-
-typedef BGraph<int> PropGraph;
 typedef BGraph<boost::no_property> SimpleGraph;
+typedef BGraph<int> WeightedGraph; 
