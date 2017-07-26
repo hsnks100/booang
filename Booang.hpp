@@ -20,6 +20,8 @@
 #include <boost/pending/indirect_cmp.hpp>
 #include <boost/range/irange.hpp>
 
+// plan to do lists
+// DFS, BFS, Prim, Kruskal, Bellman-Ford, Floyd, Warshall, Dijkstra, Bipartite, Maximum Flow
 
 namespace {
 
