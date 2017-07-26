@@ -20,7 +20,7 @@
 
 
 
-template<typename edgeType, typename vertexProperty = boost::no_property, typename vertexIndexType = int>
+template<typename edgeType = int, typename vertexProperty = boost::no_property>
 class BGraph{
   public:
     typedef boost::adjacency_list<
@@ -32,6 +32,10 @@ class BGraph{
 
     typedef typename graphType::vertex_descriptor vertex_descriptor;
     typedef typename graphType::edge_descriptor edge_descriptor;
+    struct ToWeight{
+      vertex_descriptor to;
+      edgeType weight; 
+    };
 
     //std::map<vertexIndexType, typename graphType::vertex_descriptor> toDescriptor;
     //std::map<typename graphType::vertex_descriptor, vertexIndexType> toVit;
@@ -94,17 +98,20 @@ class BGraph{
     }
 
 
-    auto operator[](vertex_descriptor v){
+    std::vector<ToWeight> operator[](vertex_descriptor v){
       auto EdgeWeightMap = get(boost::edge_weight_t(), G);
 
-      std::vector<std::pair<vertex_descriptor, edgeType>> ret;
+      //std::vector<std::pair<vertex_descriptor, edgeType>> ret;
+      std::vector<ToWeight> ret;
       auto outEdgeIters = boost::out_edges(v, G);
       bool vertexisExist = outEdgeIters.first != outEdgeIters.second;
       assert(vertexisExist);
 
       for(; outEdgeIters.first != outEdgeIters.second; ++outEdgeIters.first){
-        ret.push_back(std::make_pair((*outEdgeIters.first).m_target, 
-              EdgeWeightMap[*outEdgeIters.first]));
+        //ret.push_back(std::make_pair((*outEdgeIters.first).m_target, 
+              //EdgeWeightMap[*outEdgeIters.first]));
+        ret.push_back({(*outEdgeIters.first).m_target, 
+              EdgeWeightMap[*outEdgeIters.first]});
       }
       return ret; 
     }
@@ -167,7 +174,7 @@ class BGraph{
     }
 
     // type 에 대한 SFINAE 적용이 필요함.
-    void dijk(vertex_descriptor v0){ 
+    std::vector<ToWeight> dijk(vertex_descriptor v0){ 
       using namespace boost;
 
       auto& g = G;
@@ -179,44 +186,25 @@ class BGraph{
 
       std::cout << "distances and parents:" << std::endl;
       typename graph_traits < graphType >::vertex_iterator vi, vend;
+      std::vector<ToWeight> ret;
       for (boost::tie(vi, vend) = vertices(g); vi != vend; ++vi) {
-        std::cout << "distance(" << ") = " << d[*vi] << ", ";
-        //std::cout << g[*vi].Id << std::endl;
-        //std::cout << "parent(" << << ") = " << name[p[*vi]] << std::
-          //endl;
+        ret.push_back(ToWeight{*vi, d[*vi]});
       }
-      //std::cout << std::endl;
-      //auto s2 = add_vertex({"2"}, g);
-      //auto s3 = add_vertex({"3"}, g);
-      //auto s4 = add_vertex({"4"}, g);
-      //auto s5 = add_vertex({"5"}, g);
 
-
-      //typename property_map<graph_t, vertex_distance_t>::type
-        //d = get(vertex_distance, g);
-      //typename property_map<graph_t, vertex_predecessor_t>::type
-        //p = get(vertex_predecessor, g);
-      //dijkstra_shortest_paths(g, s, predecessor_map(p).distance_map(d));
-      //add_edge(s, s2, 1);
-      //add_edge(s, s3, 2);
-      //add_edge(s, s4, 3);
-      //add_edge(s, s5, 4);
-
-      //std::vector<vertex_descriptor> p( boost::num_vertices(g));
-      //std::vector<float> d( boost::num_vertices(g)); //here you should use type of a field, not a structure itself
-
-      //boost::dijkstra_shortest_paths(g, s, boost::weight_map(get(edge_weight, g))
-          //.predecessor_map(&p[0])); 
+      return ret;
     }
 
     auto getAllVertices() {
-      auto vertices = boost::vertices(G);
-
+      auto vertices = boost::vertices(G); 
       std::vector<vertex_descriptor> ret;
       for(; vertices.first != vertices.second; ++vertices.first){ 
         ret.push_back(*vertices.first);
       } 
       return ret;
+    }
+
+    auto getNumVertices() {
+        return boost::num_vertices(G);
     }
 
     void print() { 
@@ -279,6 +267,7 @@ class BGraph{
 
 typedef BGraph<boost::no_property> SimpleGraph;
 typedef BGraph<int> WeightedGraph; 
+template<typename vertexProperty>
+class PropGraph : public BGraph<int, vertexProperty>{};
 
-using namespace boost;
 //typedef BGraph<property<vertex_index_t, int, _>> TestedGraph; 
