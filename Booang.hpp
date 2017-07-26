@@ -21,6 +21,8 @@
 #include <boost/range/irange.hpp>
 
 
+namespace {
+
 template < typename TimeMap > class bfs_time_visitor:public boost::default_bfs_visitor {
   typedef typename boost::property_traits < TimeMap >::value_type T;
   public:
@@ -321,9 +323,12 @@ class BGraph{
     }
 }; 
 
+
+
+}
+
 typedef BGraph<boost::no_property> SimpleGraph;
 typedef BGraph<int> WeightedGraph; 
 template<typename vertexProperty>
 class PropGraph : public BGraph<int, vertexProperty>{};
-
 //typedef BGraph<property<vertex_index_t, int, _>> TestedGraph; 
