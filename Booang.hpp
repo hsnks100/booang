@@ -15,9 +15,24 @@
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
-#include <boost/property_map/property_map.hpp>
+#include <boost/property_map/property_map.hpp> 
+#include <boost/graph/breadth_first_search.hpp>
+#include <boost/pending/indirect_cmp.hpp>
+#include <boost/range/irange.hpp>
 
 
+template < typename TimeMap > class bfs_time_visitor:public boost::default_bfs_visitor {
+  typedef typename boost::property_traits < TimeMap >::value_type T;
+  public:
+  bfs_time_visitor(TimeMap tmap, T & t):m_timemap(tmap), m_time(t) { }
+  template < typename Vertex, typename Graph >
+    void discover_vertex(Vertex u, const Graph & g) const
+    {
+      boost::put(m_timemap, u, m_time++);
+    }
+  TimeMap m_timemap;
+  T & m_time;
+};
 
 
 template<typename edgeType = int, typename vertexProperty = boost::no_property>
@@ -192,6 +207,47 @@ class BGraph{
       }
 
       return ret;
+    }
+
+    void bfs() {
+      using namespace boost;
+
+      typedef graphType graph_t;
+      auto& g = G;
+
+      // Typedefs
+      typedef typename graph_traits < graph_t >::vertices_size_type Size;
+
+      // a vector to hold the discover time property for each vertex
+      std::vector < Size > dtime(num_vertices(g));
+
+      //typedef iterator_property_map<std::vector<int>::iterator, 
+              //property_map<graphType, vertex_index_t>::const_type> 
+                //asdasdf;
+              
+      typedef
+         iterator_property_map<typename std::vector<Size>::iterator, typename property_map<graphType, vertex_index_t>::const_type>
+          dtime_pm_type;
+      dtime_pm_type dtime_pm(dtime.begin(), get(vertex_index, g));
+
+      Size time = 0;
+      bfs_time_visitor < dtime_pm_type >vis(dtime_pm, time);
+      breadth_first_search(g, vertex(0, g), visitor(vis));
+
+
+      int N = num_vertices(G);
+      // Use std::sort to order the vertices by their discover time
+      std::vector<typename graph_traits<graph_t>::vertices_size_type > discover_order(N);
+      integer_range < int >range(0, N);
+      std::copy(range.begin(), range.end(), discover_order.begin());
+      std::sort(discover_order.begin(), discover_order.end(),
+          indirect_cmp < dtime_pm_type, std::less < Size > >(dtime_pm));
+
+
+      std::cout << "order of discovery: ";
+      for (int i = 0; i < N; ++i)
+        std::cout << discover_order[i] << " ";
+      std::cout << std::endl;
     }
 
     auto getAllVertices() {
