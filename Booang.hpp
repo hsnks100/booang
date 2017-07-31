@@ -54,6 +54,9 @@ class BGraph{
 
     typedef typename graphType::vertex_descriptor vertex_descriptor;
     typedef typename graphType::edge_descriptor edge_descriptor;
+    typedef typename graph_traits<graphType>::vertex_iterator vertex_iterator;
+    typedef typename graphType::vertex_bundled vertex_bundled;
+    typedef typename graphType::edge_bundled edge_bundled;
     struct ToWeight{
       vertex_descriptor to;
       edgeType weight; 
@@ -138,10 +141,10 @@ class BGraph{
       return ret; 
     }
 
-    typename graphType::vertex_bundled& getVertex(vertex_descriptor v){
+    vertex_bundled& getVertex(vertex_descriptor v){
       return get(vertex_bundle, G)[v]; 
     }
-    typename graphType::edge_bundled& operator[](typename graphType::edge_descriptor e)
+    edge_bundled& operator[](edge_descriptor e)
     { return get(edge_bundle, G)[e]; }
 
 
@@ -197,7 +200,7 @@ class BGraph{
 
     // type 에 대한 SFINAE 적용이 필요함.
     std::vector<ToWeight> dijk(vertex_descriptor v0){ 
-      using namespace boost;
+      using namespace boost; 
 
       auto& g = G;
       std::vector<vertex_descriptor> p(num_vertices(g));
@@ -207,7 +210,7 @@ class BGraph{
           distance_map(make_iterator_property_map(d.begin(), get(vertex_index, g)))); 
 
       std::cout << "distances and parents:" << std::endl;
-      typename graph_traits < graphType >::vertex_iterator vi, vend;
+      vertex_iterator vi, vend;
       std::vector<ToWeight> ret;
       for (tie(vi, vend) = vertices(g); vi != vend; ++vi) {
         ret.push_back(ToWeight{*vi, d[*vi]});
@@ -244,7 +247,7 @@ class BGraph{
 
       int N = num_vertices(G);
       // Use std::sort to order the vertices by their discover time
-      std::vector<typename graph_traits<graph_t>::vertices_size_type > discover_order(N);
+      std::vector<typename graph_traits<graph_t>::vertices_size_type> discover_order(N);
       integer_range < int >range(0, N);
       std::copy(range.begin(), range.end(), discover_order.begin());
       std::sort(discover_order.begin(), discover_order.end(),
@@ -274,6 +277,7 @@ class BGraph{
       std::cout << "vertex list" << std::endl << std::endl;
       {
         auto vertices = vertices(G);
+
         for(; vertices.first != vertices.second; ++vertices.first){
           std::cout << *vertices.first << "번 vertex 가 존재" << std::endl;
         }
@@ -283,21 +287,6 @@ class BGraph{
       std::cout << "---------------------------------------" << std::endl;
       std::cout << std::endl;
 
-      //std::cout << "edge list each vertex" << std::endl;
-      //{
-        //auto vertices = vertices(G);
-        //for(; vertices.first != vertices.second; ++vertices.first){
-          //std::cout << toVit[*vertices.first] << "번 vertex 가 존재" << std::endl;
-
-          //auto outEdgeIters = out_edges(*vertices.first, G);
-          //if(outEdgeIters.first == outEdgeIters.second) {
-            //std::cout << "... nothing!" << std::endl;
-          //}
-          //else for(; outEdgeIters.first != outEdgeIters.second; ++outEdgeIters.first){
-            //std::cout << "... ===>" << toVit[(*outEdgeIters.first).m_target] << std::endl;
-          //}
-        //}
-      //} 
     }
 
     template<typename U = edgeType>
@@ -325,6 +314,10 @@ class BGraph{
           //std::cout << "===> weight : " << EdgeWeightMap[*edges.first] << std::endl;
         }
       }
+    }
+
+    auto getGraph() {
+      return G;
     }
 }; 
 
