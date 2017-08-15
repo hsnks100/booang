@@ -36,9 +36,15 @@ int main(int,char*[])
     auto outEdgeIter = G[v0];
 
     std::cout << "----------" << std::endl;
-    for(; outEdgeIter.first != outEdgeIter.second; ++outEdgeIter.first){
+    for (auto it = outEdgeIter.begin(); it != outEdgeIter.end(); it++) {
+        std::cout << "... to" << (it->to) << std::endl;
+    }
+
+    /*
+    for(; outEdgeIter.first != outEdgeIter.second; ++outEdgeIter.first) {
         std::cout << "... to" << (*outEdgeIter.first).m_target << std::endl;
     }
+    */
 
 
     // method 2
