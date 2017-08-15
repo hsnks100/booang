@@ -276,10 +276,10 @@ class BGraph{
     void print() { 
       std::cout << "vertex list" << std::endl << std::endl;
       {
-        auto vertices = vertices(G);
+        auto verticesVector = vertices(G);
 
-        for(; vertices.first != vertices.second; ++vertices.first){
-          std::cout << *vertices.first << "번 vertex 가 존재" << std::endl;
+        for(; verticesVector.first != verticesVector.second; ++verticesVector.first){
+          std::cout << *verticesVector.first << "번 vertex 가 존재" << std::endl;
         }
       }
       std::cout << std::endl;
@@ -294,11 +294,11 @@ class BGraph{
       std::cout << "edge list" << std::endl;
       {
         auto EdgeWeightMap = get(edge_weight_t(), G);
-        auto edges = edges(G);
-        for(; edges.first != edges.second; ++edges.first){
-          auto tt = *edges.first;
-          std::cout << (*edges.first).m_source << "===>" << (*edges.first).m_target << std::endl;
-          std::cout << "===> weight : " << EdgeWeightMap[*edges.first] << std::endl;
+        auto edgesVector = edges(G);
+        for(; edgesVector.first != edgesVector.second; ++edgesVector.first){
+          auto tt = *edgesVector.first;
+          std::cout << (*edgesVector.first).m_source << "===>" << (*edgesVector.first).m_target << std::endl;
+          std::cout << "===> weight : " << EdgeWeightMap[*edgesVector.first] << std::endl;
         }
       }
     }
