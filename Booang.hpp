@@ -187,10 +187,10 @@ class BGraph{
 
     void loopAllEdges(const std::function<bool(int, int, edgeType)>& f){ 
       auto EdgeWeightMap = get(edge_weight_t(), G);
-      auto edges = edges(G);
-      for(; edges.first != edges.second; ++edges.first){
-        auto tt = *edges.first;
-        if( f((*edges.first).m_source, (*edges.first).m_target, EdgeWeightMap[*edges.first]) == false)
+      auto edgesVector = edges(G);
+      for(; edgesVector.first != edgesVector.second; ++edgesVector.first){
+        auto tt = *edgesVector.first;
+        if( f((*edgesVector.first).m_source, (*edgesVector.first).m_target, EdgeWeightMap[*edgesVector.first]) == false)
           break;
       }
     }
@@ -261,10 +261,10 @@ class BGraph{
     }
 
     auto getAllVertices() {
-      auto vertices = vertices(G); 
+      auto verticesVector = vertices(G); 
       std::vector<vertex_descriptor> ret;
-      for(; vertices.first != vertices.second; ++vertices.first){ 
-        ret.push_back(*vertices.first);
+      for(; verticesVector.first != verticesVector.second; ++verticesVector.first){ 
+        ret.push_back(*verticesVector.first);
       } 
       return ret;
     }
@@ -307,11 +307,11 @@ class BGraph{
       std::cout << "edge list" << std::endl;
       {
         auto EdgeWeightMap = get(edge_weight_t(), G);
-        auto edges = edges(G);
-        for(; edges.first != edges.second; ++edges.first){
-          auto tt = *edges.first;
-          std::cout << (*edges.first).m_source << "===>" << (*edges.first).m_target << std::endl;
-          //std::cout << "===> weight : " << EdgeWeightMap[*edges.first] << std::endl;
+        auto edgesVector = edges(G);
+        for(; edgesVector.first != edgesVector.second; ++edgesVector.first){
+          auto tt = *edgesVector.first;
+          std::cout << (*edgesVector.first).m_source << "===>" << (*edgesVector.first).m_target << std::endl;
+          //std::cout << "===> weight : " << EdgeWeightMap[*edgesVector.first] << std::endl;
         }
       }
     }
