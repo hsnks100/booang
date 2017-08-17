@@ -321,11 +321,13 @@ class BGraph{
       return G;
     }
 
+    // Directed / Undirected test not yet.
     std::vector<int> boost_prim(vertex_descriptor v0) {
       using namespace boost;
       auto& g = G;
       std::vector<int> p(num_vertices(g));
       prim_minimum_spanning_tree(g, &p[0]);
+      // parameter <p[0]> must be changed to v0...
       return p;
     }
 }; 
