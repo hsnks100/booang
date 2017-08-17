@@ -67,7 +67,16 @@ int main(int,char*[])
     // graph[2]
 
 
-
+    cout << "result of prim's algorithm--\n";
+    vector<int> s = G.boost_prim(v0);
+    for (int i = 0; i < s.size(); i++) {
+        if (i == s[i]) {
+            cout << i << " vertex has no parents" << endl;
+        }
+        else {
+            cout << i << " vertex's parents = " << s[i] << "'s node" << endl;
+        }
+    }
 }
 
 

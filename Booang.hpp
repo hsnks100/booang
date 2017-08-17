@@ -15,6 +15,7 @@
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
+#include <boost/graph/prim_minimum_spanning_tree.hpp>
 #include <boost/property_map/property_map.hpp> 
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/pending/indirect_cmp.hpp>
@@ -318,6 +319,14 @@ class BGraph{
 
     auto getGraph() {
       return G;
+    }
+
+    std::vector<int> boost_prim(vertex_descriptor v0) {
+      using namespace boost;
+      auto& g = G;
+      std::vector<int> p(num_vertices(g));
+      prim_minimum_spanning_tree(g, &p[0]);
+      return p;
     }
 }; 
 
