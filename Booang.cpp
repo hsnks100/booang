@@ -1,28 +1,26 @@
 // STL
 #include <iostream>                  // for std::cout
-#include <vector>
-using namespace std; 
+using namespace std;
 #include "Booang.hpp"
 
 
 
- 
 
-int main(int,char*[])
-{ 
-    struct VertexProperty{
+int main(int, char*[])
+{
+    struct VertexProperty {
         int Id;
     };
-    
+
     BGraph<int, VertexProperty> G;
-        
+
     auto v0 = G.addVertex();
     auto v1 = G.addVertex();
     auto v2 = G.addVertex();
     auto v3 = G.addVertex();
     G.getVertex(v0).Id = 2;
     // G[v0].Id = 2;
-    
+
     G.addEdge(v0, v1, 100);
     G.addEdge(v1, v0, 200);
     G.addEdge(v0, v2, 300);
@@ -47,17 +45,16 @@ int main(int,char*[])
     }
     */
 
-
     // method 2
-    G.loopOutEdges(v0, [](int from, int to, int weight){
-            std::cout << from << " " << to << " " << weight << std::endl;
-            }); 
+    G.loopOutEdges(v0, [](int from, int to, int weight) {
+        std::cout << from << " " << to << " " << weight << std::endl;
+    });
 
 
     // dijkstra algorithm
     G.dijk(v0);
 
-    // 
+    //
     //
     // int graph[100][100];
     //
@@ -66,18 +63,11 @@ int main(int,char*[])
     //  return ....
     // }
     // graph[2]
-
-
+    
     cout << "result of prim's algorithm--\n";
-    vector<int> s = G.boost_prim(v0);
-    for (int i = 0; i < s.size(); i++) {
-        if (i == s[i]) {
-            cout << i << " vertex has no parents" << endl;
-        }
-        else {
-            cout << i << " vertex's parents = " << s[i] << "'s node" << endl;
-        }
-    }
+    auto primResultFrom_G = G.boost_prim(v0);
+
+    primResultFrom_G.print();
 }
 
 

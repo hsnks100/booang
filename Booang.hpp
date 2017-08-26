@@ -63,6 +63,8 @@ class BGraph{
       edgeType weight; 
     };
 
+    BGraph() {}
+
     //std::map<vertexIndexType, typename graphType::vertex_descriptor> toDescriptor;
     //std::map<typename graphType::vertex_descriptor, vertexIndexType> toVit;
 
@@ -320,15 +322,25 @@ class BGraph{
     auto getGraph() {
       return G;
     }
-
-    // Directed / Undirected test not yet.
-    std::vector<int> boost_prim(vertex_descriptor v0) {
+    
+    // return Graph
+    auto boost_prim(vertex_descriptor v0) {
       using namespace boost;
+
+      typename std::remove_reference<decltype(*this)>::type ret;
       auto& g = G;
       std::vector<int> p(num_vertices(g));
+      auto EdgeWeightMap = get(edge_weight_t(), G);
+
       prim_minimum_spanning_tree(g, &p[0]);
-      // parameter <p[0]> must be changed to v0...
-      return p;
+      for (size_t i = 0; i < p.size(); i++) {
+        if (i != p[i]) {
+          auto edgeIter = edge(p[i], i, G);
+          auto t = EdgeWeightMap[edgeIter.first];
+          ret.addEdge(p[i], i, t);
+        }
+      }
+      return ret;
     }
 }; 
 
