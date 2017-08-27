@@ -326,14 +326,20 @@ class BGraph{
     // return Graph
     auto boost_prim(vertex_descriptor v0) {
       using namespace boost;
-
+      
       typename std::remove_reference<decltype(*this)>::type ret;
       auto& g = G;
-      std::vector<int> p(num_vertices(g));
+      size_t verticesCount = num_vertices(g);
+
+      std::vector<int> p(verticesCount);
       auto EdgeWeightMap = get(edge_weight_t(), G);
 
-      prim_minimum_spanning_tree(g, &p[0]);
-      for (size_t i = 0; i < p.size(); i++) {
+      typename boost::property_map<graphType, vertex_index_t>::type id = get(vertex_index, G);
+      size_t v0Index = id[v0];
+
+      prim_minimum_spanning_tree(g, &p[v0Index]);
+      
+      for (size_t i = 0; i < verticesCount; i++) {
         if (i != p[i]) {
           auto edgeIter = edge(p[i], i, G);
           auto t = EdgeWeightMap[edgeIter.first];
