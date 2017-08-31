@@ -14,7 +14,7 @@ struct VertexProperty {
     int Id;
 };
 int main() {
-    ifstream fin("test.txt");
+    ifstream fin("sample_problem/second_shortest_path_input.txt");
     clock_t startT = clock();
     for (int t = 1; t <= TESTCASE; t++) {
         BGraph<int, VertexProperty> G;
@@ -44,7 +44,7 @@ int main() {
     fin.close();
 
 
-    ifstream fin2("test.txt");
+    ifstream fin2("sample_problem/second_shortest_path_input.txt");
     // Boost
     startT = clock();
     for (int t = 1; t <= TESTCASE; t++) {
@@ -63,19 +63,22 @@ int main() {
 
         Edge *edge_arr = new Edge[edgeCount];
         int *weights = new int[edgeCount];
-        int edgeC = edgeCount / 2;
-        for (int i = 0; i < edgeC; i++) {
+        int edgeC = edgeCount;
+        for (int i = 0; i < edgeC/2; i++) {
             int fromN, toN, edgeWeight;
             fin2 >> fromN >> toN >> edgeWeight;
-            edge_arr[i] = Edge(fromN - 1, toN - 1);
-            edge_arr[i + 1] = Edge(toN - 1, fromN - 1);
-            weights[i] = weights[i + 1] = edgeWeight;
+            edge_arr[i*2] = Edge(fromN - 1, toN - 1);
+            edge_arr[i*2 + 1] = Edge(toN - 1, fromN - 1);
+            weights[i*2] = weights[i*2 + 1] = edgeWeight;
         }
 
         graph_t g(edge_arr, edge_arr + edgeCount, weights, nodeCount);
+
+        delete [] edge_arr;
+        delete [] weights;
         property_map<graph_t, edge_weight_t>::type weightmap = get(edge_weight, g);
-        vector<vertex_descriptor> p(num
-        vector<int> d(num_vertices(g));
+        vector<vertex_descriptor> p(num_vertices(g)*2);
+        vector<int> d(num_vertices(g)*2);
         vertex_descriptor s = vertex(0, g);
         dijkstra_shortest_paths(g, s,
             predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, g))).
