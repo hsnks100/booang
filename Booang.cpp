@@ -1,5 +1,6 @@
 // STL
 #include <iostream>                  // for std::cout
+#include <vector>
 using namespace std;
 #include "Booang.hpp"
 
@@ -34,9 +35,9 @@ int main(int, char*[])
     // method 1
     auto outEdgeIter = G[v0];
 
-    std::cout << "----------" << std::endl;
+    cout << "----------" << endl;
     for (auto it = outEdgeIter.begin(); it != outEdgeIter.end(); it++) {
-        std::cout << "... to" << (it->to) << std::endl;
+        cout << "... to" << (it->to) << endl;
     }
 
     /*
@@ -47,7 +48,7 @@ int main(int, char*[])
 
     // method 2
     G.loopOutEdges(v0, [](int from, int to, int weight) {
-        std::cout << from << " " << to << " " << weight << std::endl;
+        cout << from << " " << to << " " << weight << endl;
     });
 
 
