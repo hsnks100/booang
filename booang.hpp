@@ -3,10 +3,14 @@
 #include <cassert>
 #include <vector> 
 #include <type_traits> 
+#include <fstream>
+
 
 // Boost
 #include <boost/graph/adjacency_list.hpp> // for customizable graphs
 #include <boost/graph/directed_graph.hpp> // A subclass to provide reasonable arguments to adjacency_list for a typical directed graph
+#include <boost/graph/graphviz.hpp>
+
 #include <boost/graph/undirected_graph.hpp>// A subclass to provide reasonable arguments to adjacency_list for a typical undirected graph
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 
@@ -340,6 +344,18 @@ namespace {
                 }
             }
             return ret;
+        }
+        void printGraphViz() {
+            std::ofstream dot("graph.dot");
+            std::vector<std::string> names;
+            names.push_back("A");
+            names.push_back("B");
+            names.push_back("C");
+            names.push_back("D");
+
+            write_graphviz(dot, G, make_label_writer(&names[0]));
+
+            system("./dot -Tpng graph.dot > outgraph.png");
         }
     };
 
