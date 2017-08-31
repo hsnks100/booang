@@ -4,6 +4,7 @@
 #include <vector> 
 #include <type_traits> 
 #include <fstream>
+#include <sstream>
 
 
 // Boost
@@ -28,9 +29,26 @@
 // DFS, BFS, Prim, Kruskal, Bellman-Ford, Floyd, Warshall, Dijkstra, Bipartite, Maximum Flow
 
 namespace {
-
-
     using namespace boost;
+    template <typename T>
+        class has_toString {
+    private:
+        typedef char Yes;
+        typedef Yes No[2];
+
+        template <typename U, U> struct really_has; 
+        template <typename C> static Yes& Test(really_has <std::string (C::*)() const,
+                                               &C::toString>*); 
+        // EDIT: and you can detect one of several overloads... by overloading :)
+        template <typename C> static Yes& Test(really_has <std::string (C::*)(),
+                                               &C::toString>*); 
+        template <typename> static No& Test(...);
+
+    public:
+        static bool const value = sizeof(Test<T>(0)) == sizeof(Yes);
+    };
+
+
 
     template < typename TimeMap > class bfs_time_visitor :public default_bfs_visitor {
         typedef typename property_traits < TimeMap >::value_type T;
@@ -345,15 +363,43 @@ namespace {
             }
             return ret;
         }
-        void printGraphViz() {
-            std::ofstream dot("graph.dot");
-            std::vector<std::string> names;
-            names.push_back("A");
-            names.push_back("B");
-            names.push_back("C");
-            names.push_back("D");
 
+        template<typename U = vertexProperty>
+        void printGraphViz(typename std::enable_if<!std::is_same<U, no_property>::value, int>::type = 0,
+                           typename std::enable_if<!has_toString<U>::value, int>::type = 0 
+            ) {
+            std::cout << "yes prop, no toString" << std::endl;
+            std::ofstream dot("graph.dot");
+
+            write_graphviz(dot, G);
+
+            system("./dot -Tpng graph.dot > outgraph.png");
+        }
+        template<typename U = vertexProperty>
+        void printGraphViz(
+            typename std::enable_if<!std::is_same<U, no_property>::value, int>::type = 0,
+            typename std::enable_if<has_toString<U>::value, int>::type = 0 
+            ) {
+            std::cout << "yes prop, yes toString" << std::endl;
+        // void printGraphViz() {
+            std::ofstream dot("graph.dot"); 
+            std::vector<std::string> names;
+
+            auto verticesVector = vertices(G);
+            std::vector<vertex_descriptor> ret;
+            for (; verticesVector.first != verticesVector.second; ++verticesVector.first) {
+                std::ostringstream oss;
+                oss << getVertex(*verticesVector.first).toString();
+                names.push_back(oss.str());
+            }
             write_graphviz(dot, G, make_label_writer(&names[0]));
+            system("./dot -Tpng graph.dot > outgraph.png");
+        }
+        template<typename U = vertexProperty>
+        void printGraphViz(typename std::enable_if<std::is_same<U, no_property>::value, int>::type = 0) {
+        // void printGraphViz() {
+            std::ofstream dot("graph.dot");
+            write_graphviz(dot, G);
 
             system("./dot -Tpng graph.dot > outgraph.png");
         }
