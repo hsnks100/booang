@@ -2,7 +2,7 @@
 #include <iostream>                  // for std::cout
 #include <vector>
 using namespace std;
-#include "booang.hpp"
+#include "Booang.hpp"
 
 
 
@@ -52,6 +52,14 @@ int main(int, char*[])
     });
     cout << "--- end of outEdgeList 2 print---" << endl << endl;
 
+    // breath first search
+    cout << "BFS Search Example" << endl;
+    vector<unsigned int> visitSequence = G.bfs();
+    cout << "Visit Sqeunce : ";
+    for (vector<unsigned int>::iterator it = visitSequence.begin(); it != visitSequence.end(); it++) {
+        cout << *it << " ";
+    }
+    cout << endl << "--- end of BFS Search Example" << endl << endl;
 
     // dijkstra algorithm
     cout << "dijk result start from " << v0 << endl;
@@ -68,7 +76,6 @@ int main(int, char*[])
 
     primResultFrom_G.print();
     cout << "--- end of prim algorithm ---" << endl << endl;
-
 
 }
 

@@ -243,7 +243,8 @@ namespace {
             return ret;
         }
 
-        void bfs() {
+        // unsigned int is ordinary
+        std::vector<typename graph_traits<graphType>::vertices_size_type> bfs() {
             typedef graphType graph_t;
             auto& g = G;
 
@@ -274,10 +275,7 @@ namespace {
             std::sort(discover_order.begin(), discover_order.end(),
                 indirect_cmp < dtime_pm_type, std::less < Size > >(dtime_pm));
 
-            std::cout << "order of discovery: ";
-            for (int i = 0; i < N; ++i)
-                std::cout << discover_order[i] << " ";
-            std::cout << std::endl;
+            return discover_order;
         }
 
         auto getAllVertices() {
