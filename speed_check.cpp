@@ -33,7 +33,8 @@ int main() {
             G.addEdge(toN - 1, fromN - 1, edgeWeight);
         }
 
-        auto ret = G.dijk(0);
+        // G.printGraphViz(("grim" + std::to_string(t) + ".png"));
+        volatile auto ret = G.dijk(0);
         /*for (auto it = ret.begin(); it != ret.end(); it++) {
             cout << it->to << " " << it->weight << endl;
         }*/
@@ -77,12 +78,13 @@ int main() {
         delete [] edge_arr;
         delete [] weights;
         property_map<graph_t, edge_weight_t>::type weightmap = get(edge_weight, g);
-        vector<vertex_descriptor> p(num_vertices(g)*2);
-        vector<int> d(num_vertices(g)*2);
+         vector<vertex_descriptor> p(num_vertices(g)*2);
+         vector<int> d(num_vertices(g)*2);
         vertex_descriptor s = vertex(0, g);
         dijkstra_shortest_paths(g, s,
             predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, g))).
             distance_map(boost::make_iterator_property_map(d.begin(), get(boost::vertex_index, g))));
+        cout << d[0];
         /*
         cout << "digraph D {\n"
             << "  rankdir=LR\n"
