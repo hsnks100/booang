@@ -331,7 +331,7 @@ namespace {
       size_t v0Index = id[v0];
 
       prim_minimum_spanning_tree(g, &p[v0Index]);
-      
+
       for (size_t i = 0; i < verticesCount; i++) {
         if (i != p[i]) {
           auto edgeIter = edge(p[i], i, G);

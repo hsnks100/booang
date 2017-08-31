@@ -28,47 +28,48 @@ int main(int, char*[])
     G.addEdge(v2, v0, 400);
     G.addEdge(v1, v0, 50);
     G.addEdge(v2, v3, 10000);
-    G.print();
 
+    cout << "#1. 그래프 기본 구성 후 출력 결과입니다" << endl;
+    G.print();
+    cout << "--- end of print ---" << endl << endl;
 
 
     // method 1
+    cout << "#2. " << v0 << "에서 나가는 Edge의 List입니다" << endl;
     auto outEdgeIter = G[v0];
 
-    cout << "----------" << endl;
     for (auto it = outEdgeIter.begin(); it != outEdgeIter.end(); it++) {
-        cout << "... to" << (it->to) << endl;
+        cout << v0 << " to " << (it->to) << " is exist.";
+        cout << " weight = " << it->weight << endl;
     }
+    cout << "--- end of outEdgeList print ---" << endl << endl;
 
-    /*
-    for(; outEdgeIter.first != outEdgeIter.second; ++outEdgeIter.first) {
-        std::cout << "... to" << (*outEdgeIter.first).m_target << std::endl;
-    }
-    */
 
     // method 2
+    cout << "#3. " << v0 << "에서 나가는 Edge의 List입니다" << endl;
     G.loopOutEdges(v0, [](int from, int to, int weight) {
-        cout << from << " " << to << " " << weight << endl;
+        std::cout << from << " " << to << " " << weight << std::endl;
     });
+    cout << "--- end of outEdgeList 2 print---" << endl << endl;
 
 
     // dijkstra algorithm
-    G.dijk(v0);
+    cout << "dijk result start from " << v0 << endl;
+    auto h = G.dijk(v0);
+    for (auto& i : h) {
+        cout << v0 << " to " << i.to << " root minimum dist = " << i.weight << endl;
+    }
+    cout << "--- end of dijkstra ---" << endl << endl;
 
-    //
-    //
-    // int graph[100][100];
-    //
-    // graph[2][i];
-    // auto opeartor[](typename graphType::vectex_descriptor v){
-    //  return ....
-    // }
-    // graph[2]
-    
-    cout << "result of prim's algorithm--\n";
+
+    // prim algorithm
+    cout << "result of prim's algorithm start from " << v0 << endl;
     auto primResultFrom_G = G.boost_prim(v0);
 
     primResultFrom_G.print();
+    cout << "--- end of prim algorithm ---" << endl << endl;
+
+
 }
 
 
