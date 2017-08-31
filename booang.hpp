@@ -368,7 +368,10 @@ namespace {
 
             write_graphviz(dot, G);
 
-            system(("dot -Tpng graph.dot > " + filename).c_str());
+            #if defined(_WIN32) || defined(WIN32)
+            #else
+            system(("./dot -Tpng graph.dot > " + filename).c_str());
+            #endif
         }
         void writeSimpleViz2(const std::string filename) {
             std::ofstream dot("graph.dot");
@@ -382,7 +385,10 @@ namespace {
                 names.push_back(oss.str());
             }
             write_graphviz(dot, G, make_label_writer(&names[0])); 
-            system(("dot -Tpng graph.dot > " + filename).c_str());
+            #if defined(_WIN32) || defined(WIN32)
+            #else
+            system(("./dot -Tpng graph.dot > " + filename).c_str());
+            #endif
         }
         void writeSimpleViz3(const std::string filename) {
             std::ofstream dot("graph.dot");
@@ -390,7 +396,10 @@ namespace {
                            make_label_writer(get(edge_weight_t(), G))
 
                 ); 
-            system(("dot -Tpng graph.dot > " + filename).c_str());
+            #if defined(_WIN32) || defined(WIN32)
+            #else
+            system(("./dot -Tpng graph.dot > " + filename).c_str());
+            #endif
         }
         void writeSimpleViz4(const std::string filename) {
             std::ofstream dot("graph.dot");
@@ -411,7 +420,11 @@ namespace {
                            
 
             //     ); 
-            system(("dot -Tpng graph.dot > " + filename).c_str());
+
+            #if defined(_WIN32) || defined(WIN32)
+            #else
+            system(("./dot -Tpng graph.dot > " + filename).c_str());
+            #endif
         }
 
         /////////////////////////////////////////////////////
