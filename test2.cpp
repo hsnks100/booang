@@ -33,7 +33,7 @@ using namespace std;
 // }
 
 // int main(){
-    
+
   // Y<int> y1;
   // Y<string> y2;
 
@@ -69,15 +69,15 @@ struct check
 
 template<typename T>
 class Y {
-  public: 
+public:
     T t;
-    void etcFunctions(){}
+    void etcFunctions() {}
     template<typename U = T>
-        typename std::enable_if<std::is_integral<U>::value, void>::type foo() {
-            t = t / t;
-        }
+    typename std::enable_if<std::is_integral<U>::value, void>::type foo() {
+        t = t / t;
+    }
     template<typename U = T>
-        typename std::enable_if<!std::is_integral<U>::value, void>::type foo() ;
+    typename std::enable_if<!std::is_integral<U>::value, void>::type foo();
 };
 
 int main()

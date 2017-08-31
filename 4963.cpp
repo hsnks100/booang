@@ -8,25 +8,25 @@ using namespace std;
 #include <boost/graph/undirected_graph.hpp>// A subclass to provide reasonable arguments to adjacency_list for a typical undirected graph
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 
-int main(){
-  BGraph<> G;
-  cin >> N >> M;
+int main() {
+    BGraph<> G;
+    cin >> N >> M;
 
-  if (N == 0 && M == 0)
-    return 0;
+    if (N == 0 && M == 0)
+        return 0;
 
-  for (int i = 1; i <= M; i++)
-  {
-    for (int j = 1; j <= N; j++)
+    for (int i = 1; i <= M; i++)
     {
-      int t;
-      cin >> t;
-      graph[i][j] = t;
-      //printf("%d", t);
+        for (int j = 1; j <= N; j++)
+        {
+            int t;
+            cin >> t;
+            graph[i][j] = t;
+            //printf("%d", t);
+        }
+        //printf("\n");
     }
-    //printf("\n");
-  }
 
-  return 0;
+    return 0;
 }
 

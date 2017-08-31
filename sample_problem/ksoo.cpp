@@ -15,19 +15,19 @@ int second = 999999;
 int goal;
 void dfs(int s, int cost) {
     visit[s] = true;
-    if(s == goal) {
-        if(minV > cost) {
+    if (s == goal) {
+        if (minV > cost) {
             second = minV;
             minV = cost;
         }
-        else if(second > cost && minV != cost) {
+        else if (second > cost && minV != cost) {
             second = cost;
         }
     }
     else {
-        for(auto& i : adj[s]) {
-            if(visit[i.first] == false) {
-                dfs(i.first, i.second + cost); 
+        for (auto& i : adj[s]) {
+            if (visit[i.first] == false) {
+                dfs(i.first, i.second + cost);
             }
         }
     }
@@ -35,9 +35,9 @@ void dfs(int s, int cost) {
 }
 
 
-int main(){
+int main() {
     //freopen("input.txt", "r", stdin);
-    for(int  __=1; __<=50; __++) {
+    for (int __ = 1; __ <= 50; __++) {
         minV = 9999999;
         second = 999999;
         fill_n(visit, 1001, false);
@@ -47,7 +47,7 @@ int main(){
         int start, g;
         scanf("%d%d", &start, &g);
         // printf("%d, %d", start, goal);
-        for (int i = 0; i < m; i++){
+        for (int i = 0; i < m; i++) {
             int u, v; ll d; scanf("%d %d %lld", &u, &v, &d);
             adj[u].push_back(make_pair(v, d));
             adj[v].push_back(make_pair(u, d));
@@ -56,7 +56,7 @@ int main(){
         dfs(start, 0);
         cout << __ << "... ";
         cout << second << endl;
-        cout << "------------" <<  endl;
+        cout << "------------" << endl;
     }
     return 0;
 }
