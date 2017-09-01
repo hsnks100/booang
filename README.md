@@ -8,6 +8,7 @@ sudo apt install libgraphviz_dev
 git clone https://github.com/hsnks100/booang.git
 cd booang
 make
+
 ```
 
 
