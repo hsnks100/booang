@@ -29,10 +29,26 @@
 // DFS, BFS, Prim, Kruskal, Bellman-Ford, Floyd, Warshall, Dijkstra, Bipartite, Maximum Flow
 
 
+
+
+
+
+// C:\Users\dlwpd\Documents\Visual Studio 2017\Projects\Booang\Release
+
+
+#ifndef BOOPATH
+#error must be set BOOPATH (#define) #define À¸·Î BOOPATHÁ» ¼³Á¤ÇØ!!
+#endif
+#define DOTPATH BOOPATH##"\\graphviz_2.38\\bin\\dot.exe"
+
+
+
+
+
+#if !(defined(_WIN32) || defined(WIN32))
 #include <gvc.h>
-
 int dot2png(const std::string& dot, const std::string& png) {
-
+    //return 0;
     GVC_t *gvc;
     graph_t *g;
     FILE *fp;
@@ -44,7 +60,7 @@ int dot2png(const std::string& dot, const std::string& png) {
     printf("%d\n", __LINE__);
     std::cout << dot << std::endl;
     fp = fopen(dot.c_str(), "r");
-    out = fopen(png.c_str(), "w"); 
+    out = fopen(png.c_str(), "w");
     // if (argc > 2){
     //     fp = fopen(argv[1], "r");
     //     out = fopen(argv[2], "w"); 
@@ -75,21 +91,27 @@ int dot2png(const std::string& dot, const std::string& png) {
     printf("%d\n", __LINE__);
 
     return (gvFreeContext(gvc));
+
+    return 0;
 }
+
+#endif
+
+
 namespace {
     using namespace boost;
     template <typename T>
-        class has_toString {
+    class has_toString {
     private:
         typedef char Yes;
         typedef Yes No[2];
 
-        template <typename U, U> struct really_has; 
-        template <typename C> static Yes& Test(really_has <std::string (C::*)() const,
-                                               &C::toString>*); 
+        template <typename U, U> struct really_has;
+        template <typename C> static Yes& Test(really_has <std::string(C::*)() const,
+            &C::toString>*);
         // EDIT: and you can detect one of several overloads... by overloading :)
-        template <typename C> static Yes& Test(really_has <std::string (C::*)(),
-                                               &C::toString>*); 
+        template <typename C> static Yes& Test(really_has <std::string(C::*)(),
+            &C::toString>*);
         template <typename> static No& Test(...);
 
     public:
@@ -132,7 +154,14 @@ namespace {
             edgeType weight;
         };
 
-        BGraph() {}
+        BGraph() {
+#if (defined(_WIN32) || defined(WIN32))
+    #ifndef BOOPATH 
+            assert(false, "must be set BOOPATH (#define)");
+    #endif  
+#endif
+
+        }
 
         //std::map<vertexIndexType, typename graphType::vertex_descriptor> toDescriptor;
         //std::map<typename graphType::vertex_descriptor, vertexIndexType> toVit;
@@ -208,7 +237,7 @@ namespace {
                 //ret.push_back(std::make_pair((*outEdgeIters.first).m_target, 
                 //EdgeWeightMap[*outEdgeIters.first]));
                 ret.push_back({ (*outEdgeIters.first).m_target,
-                  EdgeWeightMap[*outEdgeIters.first] });
+                    EdgeWeightMap[*outEdgeIters.first] });
             }
             return ret;
         }
@@ -272,7 +301,7 @@ namespace {
         void loopAllVertices() {
         }
 
-        // type 에 대한 SFINAE 적용이 필요함.
+        // type ¿¡ ´ëÇÑ SFINAE Àû¿ëÀÌ ÇÊ¿äÇÔ.
         std::vector<ToWeight> dijk(vertex_descriptor v0) {
             auto& g = G;
             std::vector<vertex_descriptor> p(num_vertices(g));
@@ -345,7 +374,7 @@ namespace {
                 auto verticesVector = vertices(G);
 
                 for (; verticesVector.first != verticesVector.second; ++verticesVector.first) {
-                    std::cout << *verticesVector.first << "번 vertex 가 존재" << std::endl;
+                    std::cout << *verticesVector.first << "¹ø vertex °¡ Á¸Àç" << std::endl;
                 }
             }
             std::cout << std::endl;
@@ -416,12 +445,17 @@ namespace {
 
             std::ofstream dot("graph.dot");
             write_graphviz(dot, G);
+#if defined(_WIN32) || defined(WIN32)
 
-            #if defined(_WIN32) || defined(WIN32)
-            #else
+            std::string fff = DOTPATH;
+            
+            
+            system((std::string("\"") + fff + std::string("\" -Tpng graph.dot -o" + filename)).c_str());
+#else
             dot2png("graph.dot", filename);
+           
             // system(("./dot -Tpng graph.dot > " + filename).c_str());
-            #endif
+#endif
         }
         void writeSimpleViz2(const std::string filename) {
             std::ofstream dot("graph.dot");
@@ -434,22 +468,29 @@ namespace {
                 oss << getVertex(*verticesVector.first).toString();
                 names.push_back(oss.str());
             }
-            write_graphviz(dot, G, make_label_writer(&names[0])); 
-            #if defined(_WIN32) || defined(WIN32)
-            #else
+            write_graphviz(dot, G, make_label_writer(&names[0]));
+#if defined(_WIN32) || defined(WIN32)
+            std::string fff = DOTPATH;
+            
+            system((std::string("\"") + fff + std::string("\" -Tpng graph.dot -o" + filename)).c_str());
+#else
             dot2png("graph.dot", filename);
-            #endif
+#endif
         }
         void writeSimpleViz3(const std::string filename) {
             std::ofstream dot("graph.dot");
             write_graphviz(dot, G, make_label_writer(get(vertex_index, G)),
-                           make_label_writer(get(edge_weight_t(), G))
+                make_label_writer(get(edge_weight_t(), G))
 
-                ); 
-            #if defined(_WIN32) || defined(WIN32)
-            #else
+            );
+#if defined(_WIN32) || defined(WIN32)
+            std::string fff = DOTPATH;
+            
+
+            system((std::string("\"") + fff + std::string("\" -Tpng graph.dot -o" + filename)).c_str());
+#else
             dot2png("graph.dot", filename);
-            #endif
+#endif
         }
         void writeSimpleViz4(const std::string filename) {
             std::ofstream dot("graph.dot");
@@ -463,51 +504,55 @@ namespace {
                 names.push_back(oss.str());
             }
             write_graphviz(dot, G, make_label_writer(&names[0]),
-                           make_label_writer(get(edge_weight_t(), G))
+                make_label_writer(get(edge_weight_t(), G))
 
-                ); 
+            );
             // write_graphviz(dot, G, make_label_writer(&names[0])
-                           
+
 
             //     ); 
 
-            #if defined(_WIN32) || defined(WIN32)
-            #else
+#if defined(_WIN32) || defined(WIN32)
+            std::string fff = DOTPATH;
+            
+
+            system((std::string("\"") + fff + std::string("\" -Tpng graph.dot -o" + filename)).c_str());
+#else
             dot2png("graph.dot", filename);
-            #endif
+#endif
         }
 
         /////////////////////////////////////////////////////
         template<typename U = vertexProperty,
-                 typename C = edgeType
-                 >
-        void printGraphViz(const std::string filename, typename std::enable_if<!std::is_same<U, no_property>::value, int>::type = 0,
-                           typename std::enable_if<!has_toString<U>::value, int>::type = 0 ,
-                           typename std::enable_if<!std::is_same<C, no_property>::value, int>::type = 0
+            typename C = edgeType
+        >
+            void printGraphViz(const std::string filename, typename std::enable_if<!std::is_same<U, no_property>::value, int>::type = 0,
+                typename std::enable_if<!has_toString<U>::value, int>::type = 0,
+                typename std::enable_if<!std::is_same<C, no_property>::value, int>::type = 0
             ) {
             std::cout << "yes prop, no toString, yes weight" << std::endl;
             writeSimpleViz3(filename);
         }
         template<typename U = vertexProperty,
-                 typename C = edgeType
-                 >
-        void printGraphViz(
-            const std::string filename,
+            typename C = edgeType
+        >
+            void printGraphViz(
+                const std::string filename,
 
 
-            typename std::enable_if<std::is_same<U, no_property>::value, int>::type = 0,
-            typename std::enable_if<!std::is_same<C, no_property>::value, int>::type = 0
+                typename std::enable_if<std::is_same<U, no_property>::value, int>::type = 0,
+                typename std::enable_if<!std::is_same<C, no_property>::value, int>::type = 0
             ) {
             std::cout << "no prop, yes weight" << std::endl;
             writeSimpleViz3(filename);
         }
         template<typename U = vertexProperty,
-                 typename C = edgeType 
-                 >
-        void printGraphViz(
-            const std::string filename,
-            typename std::enable_if<has_toString<U>::value, int>::type = 0, 
-            typename std::enable_if<!std::is_same<C, no_property>::value, int>::type = 0
+            typename C = edgeType
+        >
+            void printGraphViz(
+                const std::string filename,
+                typename std::enable_if<has_toString<U>::value, int>::type = 0,
+                typename std::enable_if<!std::is_same<C, no_property>::value, int>::type = 0
             ) {
             std::cout << "yes prop, yes toString, yes weight" << std::endl;
             writeSimpleViz4(filename);
@@ -516,36 +561,36 @@ namespace {
 
         /////////////////////////////////////////
         template<typename U = vertexProperty,
-                 typename C = edgeType
-                 >
-        void printGraphViz(
-            const std::string filename, 
-            typename std::enable_if<!std::is_same<U, no_property>::value, int>::type = 0,
-                           typename std::enable_if<!has_toString<U>::value, int>::type = 0, 
-                           typename std::enable_if<std::is_same<C, no_property>::value, int>::type = 0
+            typename C = edgeType
+        >
+            void printGraphViz(
+                const std::string filename,
+                typename std::enable_if<!std::is_same<U, no_property>::value, int>::type = 0,
+                typename std::enable_if<!has_toString<U>::value, int>::type = 0,
+                typename std::enable_if<std::is_same<C, no_property>::value, int>::type = 0
             ) {
             std::cout << "yes prop, no toString, no weight" << std::endl;
             writeSimpleViz(filename);
         }
         template<typename U = vertexProperty,
-                 typename C = edgeType
-                 >
-        void printGraphViz(
-            const std::string filename, 
-            typename std::enable_if<std::is_same<U, no_property>::value, int>::type = 0,
-            typename std::enable_if<std::is_same<C, no_property>::value, int>::type = 0
+            typename C = edgeType
+        >
+            void printGraphViz(
+                const std::string filename,
+                typename std::enable_if<std::is_same<U, no_property>::value, int>::type = 0,
+                typename std::enable_if<std::is_same<C, no_property>::value, int>::type = 0
             ) {
             std::cout << "no prop, no weight" << std::endl;
             writeSimpleViz(filename);
             // writeSimpleViz();
         }
         template<typename U = vertexProperty,
-                 typename C = edgeType 
-                 >
-        void printGraphViz(
-            const std::string filename, 
-            typename std::enable_if<has_toString<U>::value, int>::type = 0, 
-            typename std::enable_if<std::is_same<C, no_property>::value, int>::type = 0
+            typename C = edgeType
+        >
+            void printGraphViz(
+                const std::string filename,
+                typename std::enable_if<has_toString<U>::value, int>::type = 0,
+                typename std::enable_if<std::is_same<C, no_property>::value, int>::type = 0
             ) {
             std::cout << "yes prop, yes toString, no weight" << std::endl;
             writeSimpleViz2(filename);
