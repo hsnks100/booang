@@ -28,22 +28,13 @@
 // plan to do lists
 // DFS, BFS, Prim, Kruskal, Bellman-Ford, Floyd, Warshall, Dijkstra, Bipartite, Maximum Flow
 
-
-
-
-
-
-// C:\Users\dlwpd\Documents\Visual Studio 2017\Projects\Booang\Release
-
-
-#ifndef BOOPATH
-#error must be set BOOPATH (#define) #define À¸·Î BOOPATHÁ» ¼³Á¤ÇØ!!
+#if (defined(_WIN32) || defined(WIN32))
+    #ifndef BOOPATH
+        #error must be set BOOPATH (#define) #define BOOPATH 설정하세요.
+    #endif 
 #endif
-#define DOTPATH BOOPATH##"\\graphviz_2.38\\bin\\dot.exe"
 
-
-
-
+#define DOTPATH BOOPATH##"\\graphviz_2.38\\bin\\dot.exe" 
 
 #if !(defined(_WIN32) || defined(WIN32))
 #include <gvc.h>
@@ -55,44 +46,21 @@ int dot2png(const std::string& dot, const std::string& png) {
     FILE* out;
 
     gvc = gvContext();
-    // fprintf(stdin, "%s", dot.c_str());
-
     printf("%d\n", __LINE__);
     std::cout << dot << std::endl;
     fp = fopen(dot.c_str(), "r");
     out = fopen(png.c_str(), "w");
-    // if (argc > 2){
-    //     fp = fopen(argv[1], "r");
-    //     out = fopen(argv[2], "w"); 
-    // }
-    // else{
-    //     printf("argc > 2\n");
-    //     return 0;
-    // }
-    printf("%d %d\n", __LINE__, fp);
 #ifdef WITH_CGRAPH
     g = agread(fp, 0);
 #else
     g = agread(fp);
 #endif
-
-    printf("%d\n", __LINE__);
     gvLayout(gvc, g, "dot");
-    printf("%d\n", __LINE__);
-
     gvRender(gvc, g, "plain", stdout);;
-    printf("%d\n", __LINE__);
     gvRender(gvc, g, "png", out);;
-    printf("%d\n", __LINE__);
-
     gvFreeLayout(gvc, g);
-
     agclose(g);
-    printf("%d\n", __LINE__);
-
     return (gvFreeContext(gvc));
-
-    return 0;
 }
 
 #endif
@@ -118,8 +86,6 @@ namespace {
         static bool const value = sizeof(Test<T>(0)) == sizeof(Yes);
     };
 
-
-
     template < typename TimeMap > class bfs_time_visitor :public default_bfs_visitor {
         typedef typename property_traits < TimeMap >::value_type T;
     public:
@@ -132,7 +98,6 @@ namespace {
         TimeMap m_timemap;
         T & m_time;
     };
-
 
     template<typename edgeType = int, typename vertexProperty = no_property>
     class BGraph {
@@ -162,9 +127,6 @@ namespace {
 #endif
 
         }
-
-        //std::map<vertexIndexType, typename graphType::vertex_descriptor> toDescriptor;
-        //std::map<typename graphType::vertex_descriptor, vertexIndexType> toVit;
 
         graphType G;
 
@@ -596,10 +558,7 @@ namespace {
             writeSimpleViz2(filename);
             // writeSimpleViz3(); 
         }
-    };
-
-
-
+    }; 
 }
 
 typedef BGraph<no_property> SimpleGraph;
