@@ -28,6 +28,54 @@
 // plan to do lists
 // DFS, BFS, Prim, Kruskal, Bellman-Ford, Floyd, Warshall, Dijkstra, Bipartite, Maximum Flow
 
+
+#include <gvc.h>
+
+int dot2png(const std::string& dot, const std::string& png) {
+
+    GVC_t *gvc;
+    graph_t *g;
+    FILE *fp;
+    FILE* out;
+
+    gvc = gvContext();
+    // fprintf(stdin, "%s", dot.c_str());
+
+    printf("%d\n", __LINE__);
+    std::cout << dot << std::endl;
+    fp = fopen(dot.c_str(), "r");
+    out = fopen(png.c_str(), "w"); 
+    // if (argc > 2){
+    //     fp = fopen(argv[1], "r");
+    //     out = fopen(argv[2], "w"); 
+    // }
+    // else{
+    //     printf("argc > 2\n");
+    //     return 0;
+    // }
+    printf("%d %d\n", __LINE__, fp);
+#ifdef WITH_CGRAPH
+    g = agread(fp, 0);
+#else
+    g = agread(fp);
+#endif
+
+    printf("%d\n", __LINE__);
+    gvLayout(gvc, g, "dot");
+    printf("%d\n", __LINE__);
+
+    gvRender(gvc, g, "plain", stdout);;
+    printf("%d\n", __LINE__);
+    gvRender(gvc, g, "png", out);;
+    printf("%d\n", __LINE__);
+
+    gvFreeLayout(gvc, g);
+
+    agclose(g);
+    printf("%d\n", __LINE__);
+
+    return (gvFreeContext(gvc));
+}
 namespace {
     using namespace boost;
     template <typename T>
@@ -364,13 +412,15 @@ namespace {
 
 
         void writeSimpleViz(const std::string filename) {
-            std::ofstream dot("graph.dot");
+            // std::ostringstream dot;
 
+            std::ofstream dot("graph.dot");
             write_graphviz(dot, G);
 
             #if defined(_WIN32) || defined(WIN32)
             #else
-            system(("./dot -Tpng graph.dot > " + filename).c_str());
+            dot2png("graph.dot", filename);
+            // system(("./dot -Tpng graph.dot > " + filename).c_str());
             #endif
         }
         void writeSimpleViz2(const std::string filename) {
@@ -387,7 +437,7 @@ namespace {
             write_graphviz(dot, G, make_label_writer(&names[0])); 
             #if defined(_WIN32) || defined(WIN32)
             #else
-            system(("./dot -Tpng graph.dot > " + filename).c_str());
+            dot2png("graph.dot", filename);
             #endif
         }
         void writeSimpleViz3(const std::string filename) {
@@ -398,7 +448,7 @@ namespace {
                 ); 
             #if defined(_WIN32) || defined(WIN32)
             #else
-            system(("./dot -Tpng graph.dot > " + filename).c_str());
+            dot2png("graph.dot", filename);
             #endif
         }
         void writeSimpleViz4(const std::string filename) {
@@ -423,7 +473,7 @@ namespace {
 
             #if defined(_WIN32) || defined(WIN32)
             #else
-            system(("./dot -Tpng graph.dot > " + filename).c_str());
+            dot2png("graph.dot", filename);
             #endif
         }
 

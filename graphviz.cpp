@@ -36,6 +36,8 @@ int main(int, char*[])
     BGraph<no_property, VertexProperty> G6;
     BGraph<no_property, VertexProperty2> G7;
 
+    // dot2png("graph.dot", "output.png");
+
     // G1.printGraphViz();
     // G2.printGraphViz();
     // G4.printGraphViz();
@@ -48,6 +50,7 @@ int main(int, char*[])
     // G4.addEdge(2,4, 1);
     // G4.addEdge(3,4, 1);
     // G4.printGraphViz();
+
     G1.resize(5);
     G1.addEdge(0,1, 1);
     G1.getVertex(0).Id = 2;
@@ -99,13 +102,6 @@ int main(int, char*[])
     G7.addEdge(2,4);
     G7.addEdge(3,4);
     G7.printGraphViz("7.png");
-    // G1.resize(5);
-    // G1.addEdge(0,1, 1);
-    // G1.addEdge(1,2, 1);
-    // G1.addEdge(1,3, 1);
-    // G1.addEdge(2,4, 1);
-    // G1.addEdge(3,4, 1);
-    // G1.printGraphViz("4.png");
 }
 
 
