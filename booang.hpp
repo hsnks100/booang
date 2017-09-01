@@ -33,7 +33,7 @@
 #endif 
 #endif
 
-#define DOTPATH BOOPATH##"\\graphviz_2.38\\bin\\dot.exe" 
+#define DOTPATH BOOPATH##"\\graphviz\\bin\\dot.exe" 
 
 #if !(defined(_WIN32) || defined(WIN32))
 #include <gvc.h>
