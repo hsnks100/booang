@@ -65,10 +65,18 @@ int main(int, char*[])
     G2.resize(5);
     G2.addEdge(0,1, 1);
     G2.addEdge(1,2, 1);
+	G2.addEdge(1, 2, 1);
+	G2.addEdge(2, 1, 1);
     G2.addEdge(1,3, 1);
     G2.addEdge(2,4, 1);
     G2.addEdge(3,4, 1);
     G2.printGraphViz("2.png");
+	for (auto i : G2[1]) {
+		cout << i.to << endl;
+		cout << i.weight << endl;
+		
+	}
+	
 
     G3.resize(5);
     G3.addEdge(0,1);

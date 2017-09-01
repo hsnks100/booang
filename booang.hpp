@@ -102,7 +102,7 @@ namespace {
 	class BGraph {
 	public:
 		typedef adjacency_list<
-			listS,
+			setS,
 			vecS,
 			directedS,
 			vertexProperty,
