@@ -3,7 +3,7 @@
 #include <vector>
 using namespace std;
 
-
+#define BOOPATH "C:\\Users\\hsnks\\git\\booang"
 #include "booang.hpp"
 
 
