@@ -54,9 +54,9 @@ int main(int, char*[])
 
     // breath first search
     cout << "BFS Search Example" << endl;
-    vector<unsigned int> visitSequence = G.bfs();
+    auto visitSequence = G.bfs();
     cout << "Visit Sqeunce : ";
-    for (vector<unsigned int>::iterator it = visitSequence.begin(); it != visitSequence.end(); it++) {
+    for (auto it = visitSequence.begin(); it != visitSequence.end(); it++) {
         cout << *it << " ";
     }
     cout << endl << "--- end of BFS Search Example" << endl << endl;

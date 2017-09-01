@@ -78,6 +78,7 @@ int main(int, char*[])
     G3.addEdge(3,4);
     G3.printGraphViz("3.png");
 
+
     G4.resize(5);
     G4.addEdge(0,1, 1);
     G1.getVertex(0).Id = 2;

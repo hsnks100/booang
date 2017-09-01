@@ -1,18 +1,27 @@
 CC = g++
 CXXFLAGS = -std=c++14 -I./ -I/usr/include/graphviz
-GRAPHVIZ = -std=c++14 
-TARGET = booang
-OBJECTS = booang.hpp graphviz.cpp 
-SRCS = graphviz.cpp
 
-all : $(TARGET)
 
-$(TARGET): $(OBJECTS)
-	$(CC) $(CXXFLAGS) -o $(TARGET).o -c $(SRCS)
-	$(CC) $(CXXFLAGS) $(GRAPHVIZ) -o $(TARGET) $(TARGET).o -lcgraph -lcdt -lgvc
 
+
+GRAPHVIZ = graph_viz
+GRAPHVIZ_SRC = graphviz.cpp
+
+BASIC = basic 
+BASIC_SRC = basic.cpp
+all : $(BASIC)
+
+$(GRAPHVIZ): booang.hpp $(GRAPHVIZ_SRC)
+	$(CC) $(CXXFLAGS) -o $@.o -c $(GRAPHVIZ_SRC)
+	$(CC) $(CXXFLAGS) -o $@ $@.o -lcgraph -lcdt -lgvc
+	./$(GRAPHVIZ)
+
+$(BASIC): booang.hpp $(BASIC_SRC)
+	$(CC) $(CXXFLAGS) -o $@.o -c $(BASIC_SRC)
+	$(CC) $(CXXFLAGS) -o $@ $@.o -lcgraph -lcdt -lgvc
+	# ./$@
 clean :
-	rm $(TARGET)
+	rm $(BASIC) $(GRAPHVIZ)
 
 kdot : kdot.cpp
 	g++ -c kdot.cpp -o kdot.o -I/usr/include/graphviz
