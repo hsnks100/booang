@@ -9,10 +9,10 @@ all : $(TARGET)
 
 $(TARGET): $(OBJECTS)
 	$(CC) $(CXXFLAGS) -o $(TARGET).o -c $(SRCS)
-	$(CC) $(CXXFLAGS) $(GRAPHVIZ) -o $(TARGET) $(TARGET).o `pkg-config libcgraph libgvc --cflags --libs`
+	$(CC) $(CXXFLAGS) $(GRAPHVIZ) -o $(TARGET) $(TARGET).o -lcgraph -lcdt -lgvc
 
 clean :
-	rm *.o 
+	rm $(TARGET)
 
 kdot : kdot.cpp
 	g++ -c kdot.cpp -o kdot.o -I/usr/include/graphviz
