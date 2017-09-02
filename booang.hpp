@@ -113,24 +113,26 @@ namespace {
 		typedef typename graph_traits<graphType>::vertex_iterator vertex_iterator;
 		typedef typename graphType::vertex_bundled vertex_bundled;
 		typedef typename graphType::edge_bundled edge_bundled;
+		typedef typename graphType::vertices_size_type vertices_size_type;
 		struct ToWeight {
 			vertex_descriptor to;
 			edgeType weight;
 		};
 
-		BGraph() {
+		
 #if (defined(_WIN32) || defined(WIN32))
 #ifndef BOOPATH 
 			assert(false, "must be set BOOPATH (#define)");
 #endif  
 #endif
 
-		}
+		
 
 		graphType G;
-
-		void resize(size_t s) {
+		BGraph(vertices_size_type s) {
 			G = graphType(s);
+		}
+		BGraph() {
 		}
 
 		auto addVertex() {
@@ -152,14 +154,12 @@ namespace {
 			//toVit[toDescriptor[v0]] = v0;
 			//}
 		}
-		//void removeVertex(vertexIndexType v0) {
-		//assert(false);
-		//bool isExist = toDescriptor.find(v0) != toDescriptor.end();
-		//assert(isExist == true);
-		//remove_vertex(toDescriptor[v0], G);
-		//toVit.erase(toVit.find(toDescriptor[v0]));
-		//toDescriptor.erase(v0);
-		//} 
+		void removeVertex(vertex_descriptor v0) {
+			//assert(false);
+			/*bool isExist = toDescriptor.find(v0) != toDescriptor.end();
+			assert(isExist == true);*/
+			remove_vertex(v0, G);
+		}
 
 		void addEdge(vertex_descriptor v0,
 			vertex_descriptor v1, edgeType e) {
@@ -266,7 +266,7 @@ namespace {
 		std::vector<ToWeight> dijk(vertex_descriptor v0) {
 			auto& g = G;
 			std::vector<vertex_descriptor> p(num_vertices(g));
-			std::vector<int> d(num_vertices(g));
+			std::vector<vertex_descriptor> d(num_vertices(g));
 			dijkstra_shortest_paths(g, v0,
 				predecessor_map(make_iterator_property_map(p.begin(), get(vertex_index, g))).
 				distance_map(make_iterator_property_map(d.begin(), get(vertex_index, g))));
@@ -282,37 +282,22 @@ namespace {
 		}
 
 		// unsigned int is ordinary
-		std::vector<typename graph_traits<graphType>::vertices_size_type> bfs() {
-			typedef graphType graph_t;
-			auto& g = G;
-
-			// Typedefs
-			typedef typename graph_traits < graph_t >::vertices_size_type Size;
-
-			// a vector to hold the discover time property for each vertex
-			std::vector < Size > dtime(num_vertices(g));
-
-			//typedef iterator_property_map<std::vector<int>::iterator, 
-			//property_map<graphType, vertex_index_t>::const_type> 
-
+		std::vector<vertices_size_type> bfs() {			
+			std::vector < vertices_size_type > dtime(num_vertices(g));
 			typedef
-				iterator_property_map<typename std::vector<Size>::iterator, typename property_map<graphType, vertex_index_t>::const_type>
+				iterator_property_map<typename std::vector<vertices_size_type>::iterator, typename property_map<graphType, vertex_index_t>::const_type>
 				dtime_pm_type;
 			dtime_pm_type dtime_pm(dtime.begin(), get(vertex_index, g));
 
-			Size time = 0;
+			vertices_size_type time = 0;
 			bfs_time_visitor < dtime_pm_type >vis(dtime_pm, time);
 			breadth_first_search(g, vertex(0, g), visitor(vis));
-
-
-			int N = num_vertices(G);
-			// Use std::sort to order the vertices by their discover time
-			std::vector<typename graph_traits<graph_t>::vertices_size_type> discover_order(N);
-			integer_range < int >range(0, N);
+			vertices_size_type N = num_vertices(G);
+			std::vector<vertices_size_type> discover_order(N);
+			integer_range < vertices_size_type >range(0, N);
 			std::copy(range.begin(), range.end(), discover_order.begin());
 			std::sort(discover_order.begin(), discover_order.end(),
-				indirect_cmp < dtime_pm_type, std::less < Size > >(dtime_pm));
-
+				indirect_cmp < dtime_pm_type, std::less < vertices_size_type > >(dtime_pm));
 			return discover_order;
 		}
 
@@ -379,18 +364,17 @@ namespace {
 		// return Graph
 		auto boost_prim(vertex_descriptor v0) {
 			typename std::remove_reference<decltype(*this)>::type ret;
-			auto& g = G;
 			size_t verticesCount = num_vertices(g);
 
-			std::vector<int> p(verticesCount);
+			std::vector<vertex_descriptor> p(verticesCount);
 			auto EdgeWeightMap = get(edge_weight_t(), G);
 
 			typename boost::property_map<graphType, vertex_index_t>::type id = get(vertex_index, G);
-			size_t v0Index = id[v0];
+			vertex_descriptor v0Index = id[v0];
 
-			prim_minimum_spanning_tree(g, &p[v0Index]);
+			prim_minimum_spanning_tree(G, &p[v0Index]);
 
-			for (size_t i = 0; i < verticesCount; i++) {
+			for (vertex_descriptor i = 0; i < verticesCount; i++) {
 				if (i != p[i]) {
 					auto edgeIter = edge(p[i], i, G);
 					auto t = EdgeWeightMap[edgeIter.first];
