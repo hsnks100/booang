@@ -1,4 +1,4 @@
-#include <iostream>                  // for std::cout 
+﻿#include <iostream>                  // for std::cout 
 #include <cassert>
 #include <vector> 
 #include <type_traits> 
@@ -74,13 +74,9 @@ namespace {
 		typedef Yes No[2];
 
 		template <typename U, U> struct really_has;
-		template <typename C> static Yes& Test(really_has <std::string(C::*)() const,
-			&C::toString>*);
-		// EDIT: and you can detect one of several overloads... by overloading :)
-		template <typename C> static Yes& Test(really_has <std::string(C::*)(),
-			&C::toString>*);
+		template <typename C> static Yes& Test(really_has <std::string(C::*)() const, &C::toString>*);
+		template <typename C> static Yes& Test(really_has <std::string(C::*)(), &C::toString>*);
 		template <typename> static No& Test(...);
-
 	public:
 		static bool const value = sizeof(Test<T>(0)) == sizeof(Yes);
 	};
@@ -119,6 +115,10 @@ namespace {
 			edgeType weight;
 		};
 
+        struct ShortestPath {
+            vector<ToWeight> toWeight;
+            vector<vertex_descriptor> path;
+        };
 		
 #if (defined(_WIN32) || defined(WIN32))
 #ifndef BOOPATH 
@@ -263,35 +263,38 @@ namespace {
 		}
 
 		// type
-		std::vector<ToWeight> dijk(vertex_descriptor v0) {
+		ShortestPath dijk(vertex_descriptor v0) {
 			auto& g = G;
 			std::vector<vertex_descriptor> p(num_vertices(g));
-			std::vector<vertex_descriptor> d(num_vertices(g));
+			std::vector<edgeType> d(num_vertices(g));
 			dijkstra_shortest_paths(g, v0,
 				predecessor_map(make_iterator_property_map(p.begin(), get(vertex_index, g))).
 				distance_map(make_iterator_property_map(d.begin(), get(vertex_index, g))));
 
 			std::cout << "distances and parents:" << std::endl;
 			vertex_iterator vi, vend;
-			std::vector<ToWeight> ret;
+			
+            ShortestPath ret;
 			for (tie(vi, vend) = vertices(g); vi != vend; ++vi) {
-				ret.push_back(ToWeight{ *vi, d[*vi] });
+				ret.toWeight.push_back(ToWeight{ *vi, d[*vi] });
 			}
 
+            ret.path = p;
+            
 			return ret;
 		}
 
 		// unsigned int is ordinary
 		std::vector<vertices_size_type> bfs() {			
-			std::vector < vertices_size_type > dtime(num_vertices(g));
+			std::vector < vertices_size_type > dtime(num_vertices(G));
 			typedef
 				iterator_property_map<typename std::vector<vertices_size_type>::iterator, typename property_map<graphType, vertex_index_t>::const_type>
 				dtime_pm_type;
-			dtime_pm_type dtime_pm(dtime.begin(), get(vertex_index, g));
+			dtime_pm_type dtime_pm(dtime.begin(), get(vertex_index, G));
 
 			vertices_size_type time = 0;
 			bfs_time_visitor < dtime_pm_type >vis(dtime_pm, time);
-			breadth_first_search(g, vertex(0, g), visitor(vis));
+			breadth_first_search(G, vertex(0, G), visitor(vis));
 			vertices_size_type N = num_vertices(G);
 			std::vector<vertices_size_type> discover_order(N);
 			integer_range < vertices_size_type >range(0, N);
@@ -364,7 +367,7 @@ namespace {
 		// return Graph
 		auto boost_prim(vertex_descriptor v0) {
 			typename std::remove_reference<decltype(*this)>::type ret;
-			size_t verticesCount = num_vertices(g);
+			size_t verticesCount = num_vertices(G);
 
 			std::vector<vertex_descriptor> p(verticesCount);
 			auto EdgeWeightMap = get(edge_weight_t(), G);
