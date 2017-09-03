@@ -387,6 +387,28 @@ namespace {
             return G;
         }
 
+        // 현재 vertex가 초기화 되고 있음.
+        // kruskal은 시작하는 vertex가 필요 없기 때문에 parameter X
+        auto boost_kruskal() {
+            typename std::remove_reference<decltype(*this)>::type ret;
+            size_t verticesCount = num_vertices(G);
+            size_t edgesCount = num_edges(G);
+
+            auto EdgeWeightMap = get(edge_weight, G);
+            auto weight = get(edge_weight, G);
+
+            std::vector < edge_descriptor > spanning_tree;
+
+            kruskal_minimum_spanning_tree(G, std::back_inserter(spanning_tree));
+
+
+            for (std::vector < edge_descriptor >::iterator ei = spanning_tree.begin(); ei != spanning_tree.end(); ++ei) {
+                ret.addEdge(source(*ei, G), target(*ei, G), weight[*ei]);
+            }
+
+            return ret;
+        }
+
         // return Graph
         auto boost_prim(vertex_descriptor v0) {
             typename std::remove_reference<decltype(*this)>::type ret;
