@@ -32,7 +32,7 @@
 
 #if (defined(_WIN32) || defined(WIN32))
 #ifndef BOOPATH
-#error must be set BOOPATH (#define) BOOPATH 하하하
+#error must be set BOOPATH. (ex. #define BOOPATH "C:\\Users\\pc1\\Documents\\graphviz-2.38" )
 #endif 
 #endif
 
