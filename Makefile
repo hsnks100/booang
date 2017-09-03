@@ -9,7 +9,11 @@ GRAPHVIZ_SRC = graphviz.cpp
 
 BASIC = basic 
 BASIC_SRC = basic.cpp
-all : $(BASIC)
+
+DFS = dfs
+DFS_SRC = dfs.cpp
+
+all : $(DFS) $(GRAPHVIZ)
 
 $(GRAPHVIZ): booang.hpp $(GRAPHVIZ_SRC)
 	$(CC) $(CXXFLAGS) -o $@.o -c $(GRAPHVIZ_SRC)
@@ -19,9 +23,12 @@ $(GRAPHVIZ): booang.hpp $(GRAPHVIZ_SRC)
 $(BASIC): booang.hpp $(BASIC_SRC)
 	$(CC) $(CXXFLAGS) -o $@.o -c $(BASIC_SRC)
 	$(CC) $(CXXFLAGS) -o $@ $@.o -lcgraph -lcdt -lgvc
-	# ./$@
+
+$(DFS): booang.hpp $(DFS_SRC)
+	$(CC) $(CXXFLAGS) -o $@.o -c $(DFS_SRC)
+	$(CC) $(CXXFLAGS) -o $@ $@.o -lcgraph -lcdt -lgvc
 clean :
-	rm $(BASIC) $(GRAPHVIZ)
+	rm $(BASIC) $(GRAPHVIZ) $(DFS)
 
 kdot : kdot.cpp
 	g++ -c kdot.cpp -o kdot.o -I/usr/include/graphviz

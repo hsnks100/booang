@@ -4,6 +4,7 @@
 #include <type_traits> 
 #include <fstream>
 #include <sstream>
+#include <queue>
 
 
 // Boost
@@ -23,6 +24,8 @@
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/pending/indirect_cmp.hpp>
 #include <boost/range/irange.hpp>
+#include <boost/graph/depth_first_search.hpp>
+#include <boost/graph/visitors.hpp>
 
 // plan to do lists
 // DFS, BFS, Prim, Kruskal, Bellman-Ford, Floyd, Warshall, Dijkstra, Bipartite, Maximum Flow
@@ -44,8 +47,8 @@ int dot2png(const std::string& dot, const std::string& png) {
     FILE *fp;
     FILE* out;
 
+
     gvc = gvContext();
-    printf("%d\n", __LINE__);
     std::cout << dot << std::endl;
     fp = fopen(dot.c_str(), "r");
     out = fopen(png.c_str(), "w");
@@ -55,7 +58,7 @@ int dot2png(const std::string& dot, const std::string& png) {
     g = agread(fp);
 #endif
     gvLayout(gvc, g, "dot");
-    gvRender(gvc, g, "plain", stdout);;
+    // gvRender(gvc, g, "plain", stdout);;
     gvRender(gvc, g, "png", out);;
     gvFreeLayout(gvc, g);
     agclose(g);
@@ -93,6 +96,63 @@ namespace {
         TimeMap m_timemap;
         T & m_time;
     };
+    template < typename TimeMap > class dfs_time_visitor:public default_dfs_visitor {
+        typedef typename property_traits < TimeMap >::value_type T;
+    public:
+        dfs_time_visitor(TimeMap dmap, TimeMap fmap, T & t)
+            :  m_dtimemap(dmap), m_ftimemap(fmap), m_time(t) {
+        }
+        template < typename Vertex, typename Graph >
+        void discover_vertex(Vertex u, const Graph & g) const
+            {
+                put(m_dtimemap, u, m_time++);
+            }
+        template < typename Vertex, typename Graph >
+        void finish_vertex(Vertex u, const Graph & g) const
+            {
+                put(m_ftimemap, u, m_time++);
+            }
+        TimeMap m_dtimemap;
+        TimeMap m_ftimemap;
+        T & m_time;
+    };
+
+    template <class VisitorList>
+    struct edge_categorizer : public dfs_visitor<VisitorList> {
+        typedef dfs_visitor<VisitorList> Base;
+
+        edge_categorizer(const VisitorList& v = null_visitor()) : Base(v) { }
+
+        template <class Edge, class Graph>
+        void tree_edge(Edge e, Graph& G) {
+            cout << "Tree edge: " << source(e, G) <<
+                " --> " <<  target(e, G) << endl;
+            Base::tree_edge(e, G);
+        }
+        template <class Edge, class Graph>
+        void back_edge(Edge e, Graph& G) {
+            cout << "Back edge: " << source(e, G)
+                 << " --> " <<  target(e, G) << endl;
+            Base::back_edge(e, G);
+        }
+        template <class Edge, class Graph>
+        void forward_or_cross_edge(Edge e, Graph& G) {
+            cout << "Forward or cross edge: " << source(e, G)
+                 << " --> " <<  target(e, G) << endl;
+            Base::forward_or_cross_edge(e, G);
+        }
+        template <class Edge, class Graph> 
+        void finish_edge(Edge e, Graph& G) { 
+            cout << "Finish edge: " << source(e, G) << 
+                " --> " <<  target(e, G) << endl; 
+            Base::finish_edge(e, G); 
+        } 
+    };
+    template <class VisitorList>
+    edge_categorizer<VisitorList>
+    categorize_edges(const VisitorList& v) {
+        return edge_categorizer<VisitorList>(v);
+    }
 
     template<typename edgeType = int, typename vertexProperty = no_property>
     class BGraph {
@@ -113,6 +173,30 @@ namespace {
         struct ToWeight {
             vertex_descriptor to;
             edgeType weight;
+        };
+        class boo_dfs_visitor : public default_dfs_visitor
+        {
+        public:
+            boo_dfs_visitor(std::vector<vertex_descriptor>& r)
+                : recv(r) {
+                ;
+            } 
+            void discover_vertex(vertex_descriptor v, graphType const& g) const {
+                recv.push_back(v);
+            }
+            std::vector<vertex_descriptor>& recv;
+        };
+        class boo_bfs_visitor : public default_bfs_visitor
+        {
+        public:
+            boo_bfs_visitor(std::vector<vertex_descriptor>& r)
+                : recv(r) {
+                ;
+            } 
+            void discover_vertex(vertex_descriptor v, graphType const& g) const {
+                recv.push_back(v);
+            }
+            std::vector<vertex_descriptor>& recv;
         };
 
         struct ShortestPath {
@@ -285,23 +369,31 @@ namespace {
         }
 
         // unsigned int is ordinary
-        std::vector<vertices_size_type> bfs() {
-            std::vector < vertices_size_type > dtime(num_vertices(G));
-            typedef
-                iterator_property_map<typename std::vector<vertices_size_type>::iterator, typename property_map<graphType, vertex_index_t>::const_type>
-                dtime_pm_type;
-            dtime_pm_type dtime_pm(dtime.begin(), get(vertex_index, G));
+        std::vector<vertices_size_type> bfs(vertex_descriptor beg) {
+            std::vector<vertex_descriptor> recv;
+            boo_bfs_visitor vis(recv); 
+            std::vector<default_color_type> color_map(num_vertices(G));
+            boost::queue<vertex_descriptor> bf;
+            breadth_first_visit(G,
+                                beg,
+                                bf,
+                                vis,
+                                make_iterator_property_map(color_map.begin(), get(vertex_index, G), color_map[0]));
 
-            vertices_size_type time = 0;
-            bfs_time_visitor < dtime_pm_type >vis(dtime_pm, time);
-            breadth_first_search(G, vertex(0, G), visitor(vis));
-            vertices_size_type N = num_vertices(G);
-            std::vector<vertices_size_type> discover_order(N);
-            integer_range < vertices_size_type >range(0, N);
-            std::copy(range.begin(), range.end(), discover_order.begin());
-            std::sort(discover_order.begin(), discover_order.end(),
-                indirect_cmp < dtime_pm_type, std::less < vertices_size_type > >(dtime_pm));
-            return discover_order;
+            return recv; 
+        }
+
+
+        std::vector<vertex_descriptor> dfs(vertex_descriptor beg) {
+            std::vector<vertex_descriptor> recv;
+            boo_dfs_visitor vis(recv); 
+            std::vector<default_color_type> color_map(num_vertices(G));
+            depth_first_visit(G,
+                              beg,
+                              vis,
+                              make_iterator_property_map(color_map.begin(), get(vertex_index, G), color_map[0]));
+
+            return recv; 
         }
 
         auto getAllVertices() {
@@ -372,7 +464,7 @@ namespace {
             std::vector<vertex_descriptor> p(verticesCount);
             auto EdgeWeightMap = get(edge_weight_t(), G);
 
-            typename boost::property_map<graphType, vertex_index_t>::type id = get(vertex_index, G);
+            typename property_map<graphType, vertex_index_t>::type id = get(vertex_index, G);
             vertex_descriptor v0Index = id[v0];
 
             prim_minimum_spanning_tree(G, &p[v0Index]);

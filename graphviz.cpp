@@ -53,32 +53,19 @@ int main(int, char*[])
     // G4.addEdge(3,4, 1);
     // G4.printGraphViz();
 
-    G1.resize(5);
     G1.addEdge(0,1, 1);
     G1.getVertex(0).Id = 2;
     G1.addEdge(1,2, 1);
     G1.addEdge(1,3, 1);
     G1.addEdge(2,4, 1);
     G1.addEdge(3,4, 1);
+    G1.dfs(); 
     G1.printGraphViz("1.png");
 
-    G2.resize(5);
     G2.addEdge(0,1, 1);
     G2.addEdge(1,2, 1);
-	G2.addEdge(1, 2, 1);
-	G2.addEdge(2, 1, 1);
-    G2.addEdge(1,3, 1);
-    G2.addEdge(2,4, 1);
-    G2.addEdge(3,4, 1);
-    G2.printGraphViz("2.png");
-	for (auto i : G2[1]) {
-		cout << i.to << endl;
-		cout << i.weight << endl;
-		
-	}
-	
 
-    G3.resize(5);
+
     G3.addEdge(0,1);
     G3.addEdge(1,2);
     G3.addEdge(1,3);
@@ -87,7 +74,6 @@ int main(int, char*[])
     G3.printGraphViz("3.png");
 
 
-    G4.resize(5);
     G4.addEdge(0,1, 1);
     G1.getVertex(0).Id = 2;
     G4.addEdge(1,2, 1);
@@ -96,7 +82,6 @@ int main(int, char*[])
     G4.addEdge(3,4, 1);
     G4.printGraphViz("4.png");
 
-    G6.resize(5);
     G6.addEdge(0,1);
     G6.addEdge(1,2);
     G6.getVertex(0).Id = 2;
@@ -105,7 +90,6 @@ int main(int, char*[])
     G6.addEdge(3,4);
     G6.printGraphViz("6.png");
 
-    G7.resize(5);
     G7.addEdge(0,1);
     G7.addEdge(1,2);
     G6.getVertex(0).Id = 2;
