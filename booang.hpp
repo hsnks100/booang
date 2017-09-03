@@ -1,4 +1,4 @@
-﻿#include <iostream>                  // for std::cout 
+#include <iostream>                  // for std::cout 
 #include <cassert>
 #include <vector> 
 #include <type_traits> 
@@ -300,7 +300,7 @@ namespace {
         }
 
         // unsigned int is ordinary
-        std::vector<vertices_size_type> bfs(vertex_descriptor beg) {
+        std::vector<vertex_descriptor> bfs(vertex_descriptor beg) {
             std::vector<vertex_descriptor> recv;
             boo_bfs_visitor vis(recv); 
             std::vector<default_color_type> color_map(num_vertices(G));
