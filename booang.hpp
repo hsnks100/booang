@@ -153,66 +153,34 @@ namespace {
 
         auto addVertex() {
             return add_vertex(G);
-            //if(toDescriptor.find(v0) == toDescriptor.end()) {
-            //toDescriptor[v0] = 
-            //toVit[toDescriptor[v0]] = v0;
-            //}
         }
         auto addVertex(const vertexProperty& vp) {
             add_vertex(vp, G);
-            //if(toDescriptor.find(v0) == toDescriptor.end()) {
-            //typename property_map<graphType, vertex_index_t>::type imap = 
-            //get(vertex_index, G);
-            //toDescriptor[v0] = 
-            //G[toDescriptor[v0]] = vp;
-            //std::cout << imap[toDescriptor[v0]] << std::endl;
-            ////std::cout << G[
-            //toVit[toDescriptor[v0]] = v0;
-            //}
         }
         void removeVertex(vertex_descriptor v0) {
-            //assert(false);
-            /*bool isExist = toDescriptor.find(v0) != toDescriptor.end();
-            assert(isExist == true);*/
             remove_vertex(v0, G);
         }
 
-        void addEdge(vertex_descriptor v0,
-            vertex_descriptor v1, edgeType e) {
+        void addEdge(vertex_descriptor v0, vertex_descriptor v1, edgeType e) {
             add_edge(v0, v1, e, G);
-            //bool isExist = toDescriptor.find(v0) != toDescriptor.end() && 
-            //toDescriptor.find(v1) != toDescriptor.end();
-            //assert(isExist == true);
         }
-        void addEdge(vertex_descriptor v0,
-            vertex_descriptor v1) {
+        void addEdge(vertex_descriptor v0, vertex_descriptor v1) {
             add_edge(v0, v1, G);
-            //bool isExist = toDescriptor.find(v0) != toDescriptor.end() && 
-            //toDescriptor.find(v1) != toDescriptor.end();
-            //assert(isExist == true);
-            //add_edge(toDescriptor[v0], toDescriptor[v1], G); 
         }
 
         void removeEdge(vertex_descriptor v0, vertex_descriptor v1) {
             remove_edge(v0, v1, G);
-            //bool isExist = toDescriptor.find(v0) != toDescriptor.end() && 
-            //toDescriptor.find(v1) != toDescriptor.end();
-            //assert(isExist == true);
         }
 
 
         std::vector<ToWeight> operator[](vertex_descriptor v) {
             auto EdgeWeightMap = get(edge_weight_t(), G);
-
-            //std::vector<std::pair<vertex_descriptor, edgeType>> ret;
             std::vector<ToWeight> ret;
             auto outEdgeIters = out_edges(v, G);
             bool vertexisExist = outEdgeIters.first != outEdgeIters.second;
             assert(vertexisExist);
 
             for (; outEdgeIters.first != outEdgeIters.second; ++outEdgeIters.first) {
-                //ret.push_back(std::make_pair((*outEdgeIters.first).m_target, 
-                //EdgeWeightMap[*outEdgeIters.first]));
                 ret.push_back({ (*outEdgeIters.first).m_target,
                     EdgeWeightMap[*outEdgeIters.first] });
             }
@@ -240,7 +208,6 @@ namespace {
             std::pair<edge_descriptor, bool> ed = edge(v0, v1, G);
             edgeType weight = get(edge_weight_t(), G, ed.first);
             return weight;
-            //return no_property();
         }
 
 
@@ -395,7 +362,6 @@ namespace {
             }
         }
 
-        // 현재 vertex가 초기화 되고 있음.
         // kruskal은 시작하는 vertex가 필요 없기 때문에 parameter X
         auto boost_kruskal() {
             typename std::remove_reference<decltype(*this)>::type ret = *this;
@@ -445,21 +411,16 @@ namespace {
 
 
         void writeSimpleViz(const std::string filename) {
-            // std::ostringstream dot;
-
             std::ofstream dot("graph.dot");
             write_graphviz(dot, G);
 #if defined(_WIN32) || defined(WIN32)
 
             std::string fff = DOTPATH;
-
             auto cmd = std::string("\"") + fff + std::string("\" -Tpng graph.dot -o" + filename);
             std::cout << cmd << std::endl;
             system(cmd.c_str());
 #else
             dot2png("graph.dot", filename);
-
-            // system(("./dot -Tpng graph.dot > " + filename).c_str());
 #endif
         }
         void writeSimpleViz2(const std::string filename) {
@@ -561,7 +522,6 @@ namespace {
             ) {
             std::cout << "yes prop, yes toString, yes weight" << std::endl;
             writeSimpleViz4(filename);
-            // writeSimpleViz3(); 
         }
 
         /////////////////////////////////////////
@@ -599,7 +559,6 @@ namespace {
             ) {
             std::cout << "yes prop, yes toString, no weight" << std::endl;
             writeSimpleViz2(filename);
-            // writeSimpleViz3(); 
         }
     };
 }
