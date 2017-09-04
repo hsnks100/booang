@@ -26,6 +26,7 @@
 #include <boost/range/irange.hpp>
 #include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/visitors.hpp>
+#include <boost/graph/kruskal_min_spanning_tree.hpp>
 
 // plan to do lists
 // DFS, BFS, Prim, Kruskal, Bellman-Ford, Floyd, Warshall, Dijkstra, Bipartite, Maximum Flow
@@ -387,10 +388,18 @@ namespace {
             return G;
         }
 
+        void removeAllEdges() {
+            auto verticesVector = vertices(G);
+            for (; verticesVector.first != verticesVector.second; ++verticesVector.first) {
+                clear_vertex(*verticesVector.first, G);
+            }
+        }
+
         // 현재 vertex가 초기화 되고 있음.
         // kruskal은 시작하는 vertex가 필요 없기 때문에 parameter X
         auto boost_kruskal() {
-            typename std::remove_reference<decltype(*this)>::type ret;
+            typename std::remove_reference<decltype(*this)>::type ret = *this;
+            ret.removeAllEdges();
             size_t verticesCount = num_vertices(G);
             size_t edgesCount = num_edges(G);
 
@@ -402,7 +411,7 @@ namespace {
             kruskal_minimum_spanning_tree(G, std::back_inserter(spanning_tree));
 
 
-            for (std::vector < edge_descriptor >::iterator ei = spanning_tree.begin(); ei != spanning_tree.end(); ++ei) {
+            for (typename std::vector < edge_descriptor >::iterator ei = spanning_tree.begin(); ei != spanning_tree.end(); ++ei) {
                 ret.addEdge(source(*ei, G), target(*ei, G), weight[*ei]);
             }
 
@@ -411,7 +420,9 @@ namespace {
 
         // return Graph
         auto boost_prim(vertex_descriptor v0) {
-            typename std::remove_reference<decltype(*this)>::type ret;
+            typename std::remove_reference<decltype(*this)>::type ret = *this;
+            ret.removeAllEdges();
+
             size_t verticesCount = num_vertices(G);
 
             std::vector<vertex_descriptor> p(verticesCount);
