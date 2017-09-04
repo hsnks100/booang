@@ -494,9 +494,10 @@ namespace {
         template<typename U = vertexProperty,
             typename C = edgeType
         >
-            void printGraphViz(const string filename, typename std::enable_if<!std::is_same<U, no_property>::value, int>::type = 0,
-                typename std::enable_if<!has_toString<U>::value, int>::type = 0,
-                typename std::enable_if<!std::is_same<C, no_property>::value, int>::type = 0
+            void printGraphViz(const string filename,
+                               typename std::enable_if<!std::is_same<U, no_property>::value>::type* = 0,
+                typename std::enable_if<!has_toString<U>::value>::type* = 0,
+                typename std::enable_if<!std::is_same<C, no_property>::value>::type* = 0
             ) {
             cout << "yes prop, no toString, yes weight" << endl;
             writeSimpleViz3(filename);
@@ -508,8 +509,8 @@ namespace {
                 const string filename,
 
 
-                typename std::enable_if<std::is_same<U, no_property>::value, int>::type = 0,
-                typename std::enable_if<!std::is_same<C, no_property>::value, int>::type = 0
+                typename std::enable_if<std::is_same<U, no_property>::value>::type* = 0,
+                typename std::enable_if<!std::is_same<C, no_property>::value>::type* = 0
             ) {
             cout << "no prop, yes weight" << endl;
             writeSimpleViz3(filename);
@@ -519,8 +520,8 @@ namespace {
         >
             void printGraphViz(
                 const string filename,
-                typename std::enable_if<has_toString<U>::value, int>::type = 0,
-                typename std::enable_if<!std::is_same<C, no_property>::value, int>::type = 0
+                typename std::enable_if<has_toString<U>::value>::type* = 0,
+                typename std::enable_if<!std::is_same<C, no_property>::value>::type* = 0
             ) {
             cout << "yes prop, yes toString, yes weight" << endl;
             writeSimpleViz4(filename);
@@ -532,9 +533,9 @@ namespace {
         >
             void printGraphViz(
                 const string filename,
-                typename std::enable_if<!std::is_same<U, no_property>::value, int>::type = 0,
-                typename std::enable_if<!has_toString<U>::value, int>::type = 0,
-                typename std::enable_if<std::is_same<C, no_property>::value, int>::type = 0
+                typename std::enable_if<!std::is_same<U, no_property>::value>::type* = 0,
+                typename std::enable_if<!has_toString<U>::value>::type* = 0,
+                typename std::enable_if<std::is_same<C, no_property>::value>::type* = 0
             ) {
             cout << "yes prop, no toString, no weight" << endl;
             writeSimpleViz(filename);
@@ -544,8 +545,8 @@ namespace {
         >
             void printGraphViz(
                 const string filename,
-                typename std::enable_if<std::is_same<U, no_property>::value, int>::type = 0,
-                typename std::enable_if<std::is_same<C, no_property>::value, int>::type = 0
+                typename std::enable_if<std::is_same<U, no_property>::value>::type* = 0,
+                typename std::enable_if<std::is_same<C, no_property>::value>::type* = 0
             ) {
             cout << "no prop, no weight" << endl;
             writeSimpleViz(filename);
@@ -556,8 +557,8 @@ namespace {
         >
             void printGraphViz(
                 const string filename,
-                typename std::enable_if<has_toString<U>::value, int>::type = 0,
-                typename std::enable_if<std::is_same<C, no_property>::value, int>::type = 0
+                typename std::enable_if<has_toString<U>::value>::type* = 0,
+                typename std::enable_if<std::is_same<C, no_property>::value>::type* = 0
             ) {
             cout << "yes prop, yes toString, no weight" << endl;
             writeSimpleViz2(filename);
