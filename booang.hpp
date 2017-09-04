@@ -41,7 +41,7 @@
 
 #if !(defined(_WIN32) || defined(WIN32))
 #include <gvc.h>
-int dot2png(const std::string& dot, const std::string& png) {
+int dot2png(const string& dot, const string& png) {
     //return 0;
     GVC_t *gvc;
     graph_t *g;
@@ -50,7 +50,7 @@ int dot2png(const std::string& dot, const std::string& png) {
 
 
     gvc = gvContext();
-    std::cout << dot << std::endl;
+    cout << dot << endl;
     fp = fopen(dot.c_str(), "r");
     out = fopen(png.c_str(), "w");
 #ifdef WITH_CGRAPH
@@ -71,6 +71,7 @@ int dot2png(const std::string& dot, const std::string& png) {
 
 namespace {
     using namespace boost;
+    using namespace std;
     template <typename T>
     class has_toString {
     private:
@@ -78,8 +79,8 @@ namespace {
         typedef Yes No[2];
 
         template <typename U, U> struct really_has;
-        template <typename C> static Yes& Test(really_has <std::string(C::*)() const, &C::toString>*);
-        template <typename C> static Yes& Test(really_has <std::string(C::*)(), &C::toString>*);
+        template <typename C> static Yes& Test(really_has <string(C::*)() const, &C::toString>*);
+        template <typename C> static Yes& Test(really_has <string(C::*)(), &C::toString>*);
         template <typename> static No& Test(...);
     public:
         static bool const value = sizeof(Test<T>(0)) == sizeof(Yes);
@@ -109,26 +110,26 @@ namespace {
         class boo_dfs_visitor : public default_dfs_visitor
         {
         public:
-            boo_dfs_visitor(std::vector<vertex_descriptor>& r)
+            boo_dfs_visitor(vector<vertex_descriptor>& r)
                 : recv(r) {
                 ;
             } 
             void discover_vertex(vertex_descriptor v, graphType const& g) const {
                 recv.push_back(v);
             }
-            std::vector<vertex_descriptor>& recv;
+            vector<vertex_descriptor>& recv;
         };
         class boo_bfs_visitor : public default_bfs_visitor
         {
         public:
-            boo_bfs_visitor(std::vector<vertex_descriptor>& r)
+            boo_bfs_visitor(vector<vertex_descriptor>& r)
                 : recv(r) {
                 ;
             } 
             void discover_vertex(vertex_descriptor v, graphType const& g) const {
                 recv.push_back(v);
             }
-            std::vector<vertex_descriptor>& recv;
+            vector<vertex_descriptor>& recv;
         };
 
         struct ShortestPath {
@@ -173,9 +174,9 @@ namespace {
         }
 
 
-        std::vector<ToWeight> operator[](vertex_descriptor v) {
+        vector<ToWeight> operator[](vertex_descriptor v) {
             auto EdgeWeightMap = get(edge_weight_t(), G);
-            std::vector<ToWeight> ret;
+            vector<ToWeight> ret;
             auto outEdgeIters = out_edges(v, G);
             bool vertexisExist = outEdgeIters.first != outEdgeIters.second;
             assert(vertexisExist);
@@ -197,22 +198,22 @@ namespace {
 
 
         bool hasEdge(vertex_descriptor v0, vertex_descriptor v1) {
-            std::pair<edge_descriptor, bool> ed = edge(v0, v1, G);
+            pair<edge_descriptor, bool> ed = edge(v0, v1, G);
             return ed.second;
         }
 
 
         edgeType getWeight(vertex_descriptor v0, vertex_descriptor v1) {
 
-            static_assert(!std::is_same<edgeType, no_property>::value, "edgeType must not be no_property");
-            std::pair<edge_descriptor, bool> ed = edge(v0, v1, G);
+            static_assert(!is_same<edgeType, no_property>::value, "edgeType must not be no_property");
+            pair<edge_descriptor, bool> ed = edge(v0, v1, G);
             edgeType weight = get(edge_weight_t(), G, ed.first);
             return weight;
         }
 
 
         edgeType putWeight(vertex_descriptor v0, vertex_descriptor v1, edgeType weight) {
-            std::pair<edge_descriptor, bool> ed = edge(v0, v1, G);
+            pair<edge_descriptor, bool> ed = edge(v0, v1, G);
             this->addEdge(v0, v1, weight);
             if (!ed.second) {
                 this->addEdge(v0, v1, weight);
@@ -222,7 +223,7 @@ namespace {
             }
         }
 
-        void loopOutEdges(vertex_descriptor v, const std::function<void(int, int, edgeType)>& f) {
+        void loopOutEdges(vertex_descriptor v, const function<void(int, int, edgeType)>& f) {
             auto outEdgeIter = out_edges(v, G);
             auto edgeWeightMap = get(edge_weight_t(), G);
 
@@ -232,7 +233,7 @@ namespace {
             }
         }
 
-        void loopAllEdges(const std::function<bool(int, int, edgeType)>& f) {
+        void loopAllEdges(const function<bool(int, int, edgeType)>& f) {
             auto EdgeWeightMap = get(edge_weight_t(), G);
             auto edgesVector = edges(G);
             for (; edgesVector.first != edgesVector.second; ++edgesVector.first) {
@@ -248,13 +249,13 @@ namespace {
         // type
         ShortestPath dijk(vertex_descriptor v0) {
             auto& g = G;
-            std::vector<vertex_descriptor> p(num_vertices(g));
-            std::vector<edgeType> d(num_vertices(g));
+            vector<vertex_descriptor> p(num_vertices(g));
+            vector<edgeType> d(num_vertices(g));
             dijkstra_shortest_paths(g, v0,
                 predecessor_map(make_iterator_property_map(p.begin(), get(vertex_index, g))).
                 distance_map(make_iterator_property_map(d.begin(), get(vertex_index, g))));
 
-            std::cout << "distances and parents:" << std::endl;
+            cout << "distances and parents:" << endl;
             vertex_iterator vi, vend;
 
             ShortestPath ret;
@@ -268,10 +269,10 @@ namespace {
         }
 
         // unsigned int is ordinary
-        std::vector<vertex_descriptor> bfs(vertex_descriptor beg) {
-            std::vector<vertex_descriptor> recv;
+        vector<vertex_descriptor> bfs(vertex_descriptor beg) {
+            vector<vertex_descriptor> recv;
             boo_bfs_visitor vis(recv); 
-            std::vector<default_color_type> color_map(num_vertices(G));
+            vector<default_color_type> color_map(num_vertices(G));
             boost::queue<vertex_descriptor> bf;
             breadth_first_visit(G,
                                 beg,
@@ -283,10 +284,10 @@ namespace {
         }
 
 
-        std::vector<vertex_descriptor> dfs(vertex_descriptor beg) {
-            std::vector<vertex_descriptor> recv;
+        vector<vertex_descriptor> dfs(vertex_descriptor beg) {
+            vector<vertex_descriptor> recv;
             boo_dfs_visitor vis(recv); 
-            std::vector<default_color_type> color_map(num_vertices(G));
+            vector<default_color_type> color_map(num_vertices(G));
             depth_first_visit(G,
                               beg,
                               vis,
@@ -297,7 +298,7 @@ namespace {
 
         auto getAllVertices() {
             auto verticesVector = vertices(G);
-            std::vector<vertex_descriptor> ret;
+            vector<vertex_descriptor> ret;
             for (; verticesVector.first != verticesVector.second; ++verticesVector.first) {
                 ret.push_back(*verticesVector.first);
             }
@@ -309,44 +310,44 @@ namespace {
         }
 
         void print() {
-            std::cout << "vertex list" << std::endl << std::endl;
+            cout << "vertex list" << endl << endl;
             {
                 auto verticesVector = vertices(G);
 
                 for (; verticesVector.first != verticesVector.second; ++verticesVector.first) {
-                    std::cout << *verticesVector.first << "vertex" << std::endl;
+                    cout << *verticesVector.first << "vertex" << endl;
                 }
             }
-            std::cout << std::endl;
+            cout << endl;
             printEdgeList();
-            std::cout << "---------------------------------------" << std::endl;
-            std::cout << std::endl;
+            cout << "---------------------------------------" << endl;
+            cout << endl;
 
         }
 
         template<typename U = edgeType>
-        typename std::enable_if<!std::is_same<U, no_property>::value, void>::type printEdgeList() {
-            std::cout << "edge list" << std::endl;
+        typename enable_if<!is_same<U, no_property>::value, void>::type printEdgeList() {
+            cout << "edge list" << endl;
             {
                 auto EdgeWeightMap = get(edge_weight_t(), G);
                 auto edgesVector = edges(G);
                 for (; edgesVector.first != edgesVector.second; ++edgesVector.first) {
                     auto tt = *edgesVector.first;
-                    std::cout << (*edgesVector.first).m_source << "===>" << (*edgesVector.first).m_target << std::endl;
-                    std::cout << "===> weight : " << EdgeWeightMap[*edgesVector.first] << std::endl;
+                    cout << (*edgesVector.first).m_source << "===>" << (*edgesVector.first).m_target << endl;
+                    cout << "===> weight : " << EdgeWeightMap[*edgesVector.first] << endl;
                 }
             }
         }
         template<typename U = edgeType>
-        typename std::enable_if<std::is_same<U, no_property>::value, void>::type printEdgeList() {
-            std::cout << "edge list" << std::endl;
+        typename enable_if<is_same<U, no_property>::value, void>::type printEdgeList() {
+            cout << "edge list" << endl;
             {
                 auto EdgeWeightMap = get(edge_weight_t(), G);
                 auto edgesVector = edges(G);
                 for (; edgesVector.first != edgesVector.second; ++edgesVector.first) {
                     auto tt = *edgesVector.first;
-                    std::cout << (*edgesVector.first).m_source << "===>" << (*edgesVector.first).m_target << std::endl;
-                    //std::cout << "===> weight : " << EdgeWeightMap[*edgesVector.first] << std::endl;
+                    cout << (*edgesVector.first).m_source << "===>" << (*edgesVector.first).m_target << endl;
+                    //cout << "===> weight : " << EdgeWeightMap[*edgesVector.first] << endl;
                 }
             }
         }
@@ -364,7 +365,7 @@ namespace {
 
         // kruskal은 시작하는 vertex가 필요 없기 때문에 parameter X
         auto boost_kruskal() {
-            typename std::remove_reference<decltype(*this)>::type ret = *this;
+            typename remove_reference<decltype(*this)>::type ret = *this;
             ret.removeAllEdges();
             size_t verticesCount = num_vertices(G);
             size_t edgesCount = num_edges(G);
@@ -372,26 +373,27 @@ namespace {
             auto EdgeWeightMap = get(edge_weight, G);
             auto weight = get(edge_weight, G);
 
-            std::vector < edge_descriptor > spanning_tree;
+            vector < edge_descriptor > spanning_tree;
 
-            kruskal_minimum_spanning_tree(G, std::back_inserter(spanning_tree));
+            kruskal_minimum_spanning_tree(G, back_inserter(spanning_tree));
 
 
-            for (typename std::vector < edge_descriptor >::iterator ei = spanning_tree.begin(); ei != spanning_tree.end(); ++ei) {
+            for (typename vector < edge_descriptor >::iterator ei = spanning_tree.begin(); ei != spanning_tree.end(); ++ei) {
                 ret.addEdge(source(*ei, G), target(*ei, G), weight[*ei]);
             }
 
             return ret;
         }
 
+
         // return Graph
         auto boost_prim(vertex_descriptor v0) {
-            typename std::remove_reference<decltype(*this)>::type ret = *this;
+            typename remove_reference<decltype(*this)>::type ret = *this;
             ret.removeAllEdges();
 
             size_t verticesCount = num_vertices(G);
 
-            std::vector<vertex_descriptor> p(verticesCount);
+            vector<vertex_descriptor> p(verticesCount);
             auto EdgeWeightMap = get(edge_weight_t(), G);
 
             typename property_map<graphType, vertex_index_t>::type id = get(vertex_index, G);
@@ -410,62 +412,62 @@ namespace {
         }
 
 
-        void writeSimpleViz(const std::string filename) {
-            std::ofstream dot("graph.dot");
+        void writeSimpleViz(const string filename) {
+            ofstream dot("graph.dot");
             write_graphviz(dot, G);
 #if defined(_WIN32) || defined(WIN32)
 
-            std::string fff = DOTPATH;
-            auto cmd = std::string("\"") + fff + std::string("\" -Tpng graph.dot -o" + filename);
-            std::cout << cmd << std::endl;
+            string fff = DOTPATH;
+            auto cmd = string("\"") + fff + string("\" -Tpng graph.dot -o" + filename);
+            cout << cmd << endl;
             system(cmd.c_str());
 #else
             dot2png("graph.dot", filename);
 #endif
         }
-        void writeSimpleViz2(const std::string filename) {
-            std::ofstream dot("graph.dot");
+        void writeSimpleViz2(const string filename) {
+            ofstream dot("graph.dot");
 
             auto verticesVector = vertices(G);
-            std::vector<std::string> names;
-            std::vector<vertex_descriptor> ret;
+            vector<string> names;
+            vector<vertex_descriptor> ret;
             for (; verticesVector.first != verticesVector.second; ++verticesVector.first) {
-                std::ostringstream oss;
+                ostringstream oss;
                 oss << getVertex(*verticesVector.first).toString();
                 names.push_back(oss.str());
             }
             write_graphviz(dot, G, make_label_writer(&names[0]));
 #if defined(_WIN32) || defined(WIN32)
-            std::string fff = DOTPATH;
+            string fff = DOTPATH;
 
-            system((std::string("\"") + fff + std::string("\" -Tpng graph.dot -o" + filename)).c_str());
+            system((string("\"") + fff + string("\" -Tpng graph.dot -o" + filename)).c_str());
 #else
             dot2png("graph.dot", filename);
 #endif
         }
-        void writeSimpleViz3(const std::string filename) {
-            std::ofstream dot("graph.dot");
+        void writeSimpleViz3(const string filename) {
+            ofstream dot("graph.dot");
             write_graphviz(dot, G, make_label_writer(get(vertex_index, G)),
                 make_label_writer(get(edge_weight_t(), G))
 
             );
 #if defined(_WIN32) || defined(WIN32)
-            std::string fff = DOTPATH;
+            string fff = DOTPATH;
 
 
-            system((std::string("\"") + fff + std::string("\" -Tpng graph.dot -o" + filename)).c_str());
+            system((string("\"") + fff + string("\" -Tpng graph.dot -o" + filename)).c_str());
 #else
             dot2png("graph.dot", filename);
 #endif
         }
-        void writeSimpleViz4(const std::string filename) {
-            std::ofstream dot("graph.dot");
+        void writeSimpleViz4(const string filename) {
+            ofstream dot("graph.dot");
 
             auto verticesVector = vertices(G);
-            std::vector<std::string> names;
-            std::vector<vertex_descriptor> ret;
+            vector<string> names;
+            vector<vertex_descriptor> ret;
             for (; verticesVector.first != verticesVector.second; ++verticesVector.first) {
-                std::ostringstream oss;
+                ostringstream oss;
                 oss << getVertex(*verticesVector.first).toString();
                 names.push_back(oss.str());
             }
@@ -479,10 +481,10 @@ namespace {
             //     ); 
 
 #if defined(_WIN32) || defined(WIN32)
-            std::string fff = DOTPATH;
+            string fff = DOTPATH;
 
 
-            system((std::string("\"") + fff + std::string("\" -Tpng graph.dot -o" + filename)).c_str());
+            system((string("\"") + fff + string("\" -Tpng graph.dot -o" + filename)).c_str());
 #else
             dot2png("graph.dot", filename);
 #endif
@@ -492,35 +494,35 @@ namespace {
         template<typename U = vertexProperty,
             typename C = edgeType
         >
-            void printGraphViz(const std::string filename, typename std::enable_if<!std::is_same<U, no_property>::value, int>::type = 0,
-                typename std::enable_if<!has_toString<U>::value, int>::type = 0,
-                typename std::enable_if<!std::is_same<C, no_property>::value, int>::type = 0
+            void printGraphViz(const string filename, typename enable_if<!is_same<U, no_property>::value, int>::type = 0,
+                typename enable_if<!has_toString<U>::value, int>::type = 0,
+                typename enable_if<!is_same<C, no_property>::value, int>::type = 0
             ) {
-            std::cout << "yes prop, no toString, yes weight" << std::endl;
+            cout << "yes prop, no toString, yes weight" << endl;
             writeSimpleViz3(filename);
         }
         template<typename U = vertexProperty,
             typename C = edgeType
         >
             void printGraphViz(
-                const std::string filename,
+                const string filename,
 
 
-                typename std::enable_if<std::is_same<U, no_property>::value, int>::type = 0,
-                typename std::enable_if<!std::is_same<C, no_property>::value, int>::type = 0
+                typename enable_if<is_same<U, no_property>::value, int>::type = 0,
+                typename enable_if<!is_same<C, no_property>::value, int>::type = 0
             ) {
-            std::cout << "no prop, yes weight" << std::endl;
+            cout << "no prop, yes weight" << endl;
             writeSimpleViz3(filename);
         }
         template<typename U = vertexProperty,
             typename C = edgeType
         >
             void printGraphViz(
-                const std::string filename,
-                typename std::enable_if<has_toString<U>::value, int>::type = 0,
-                typename std::enable_if<!std::is_same<C, no_property>::value, int>::type = 0
+                const string filename,
+                typename enable_if<has_toString<U>::value, int>::type = 0,
+                typename enable_if<!is_same<C, no_property>::value, int>::type = 0
             ) {
-            std::cout << "yes prop, yes toString, yes weight" << std::endl;
+            cout << "yes prop, yes toString, yes weight" << endl;
             writeSimpleViz4(filename);
         }
 
@@ -529,23 +531,23 @@ namespace {
             typename C = edgeType
         >
             void printGraphViz(
-                const std::string filename,
-                typename std::enable_if<!std::is_same<U, no_property>::value, int>::type = 0,
-                typename std::enable_if<!has_toString<U>::value, int>::type = 0,
-                typename std::enable_if<std::is_same<C, no_property>::value, int>::type = 0
+                const string filename,
+                typename enable_if<!is_same<U, no_property>::value, int>::type = 0,
+                typename enable_if<!has_toString<U>::value, int>::type = 0,
+                typename enable_if<is_same<C, no_property>::value, int>::type = 0
             ) {
-            std::cout << "yes prop, no toString, no weight" << std::endl;
+            cout << "yes prop, no toString, no weight" << endl;
             writeSimpleViz(filename);
         }
         template<typename U = vertexProperty,
             typename C = edgeType
         >
             void printGraphViz(
-                const std::string filename,
-                typename std::enable_if<std::is_same<U, no_property>::value, int>::type = 0,
-                typename std::enable_if<std::is_same<C, no_property>::value, int>::type = 0
+                const string filename,
+                typename enable_if<is_same<U, no_property>::value, int>::type = 0,
+                typename enable_if<is_same<C, no_property>::value, int>::type = 0
             ) {
-            std::cout << "no prop, no weight" << std::endl;
+            cout << "no prop, no weight" << endl;
             writeSimpleViz(filename);
             // writeSimpleViz();
         }
@@ -553,11 +555,11 @@ namespace {
             typename C = edgeType
         >
             void printGraphViz(
-                const std::string filename,
-                typename std::enable_if<has_toString<U>::value, int>::type = 0,
-                typename std::enable_if<std::is_same<C, no_property>::value, int>::type = 0
+                const string filename,
+                typename enable_if<has_toString<U>::value, int>::type = 0,
+                typename enable_if<is_same<C, no_property>::value, int>::type = 0
             ) {
-            std::cout << "yes prop, yes toString, no weight" << std::endl;
+            cout << "yes prop, yes toString, no weight" << endl;
             writeSimpleViz2(filename);
         }
     };
