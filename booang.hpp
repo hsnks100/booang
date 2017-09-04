@@ -69,22 +69,11 @@ int dot2png(const string& dot, const string& png) {
 #endif
 
 
-namespace {
+#include "utility/has.hpp"
+
+namespace booang{
     using namespace boost;
     using namespace std;
-    template <typename T>
-    class has_toString {
-    private:
-        typedef char Yes;
-        typedef Yes No[2];
-
-        template <typename U, U> struct really_has;
-        template <typename C> static Yes& Test(really_has <string(C::*)() const, &C::toString>*);
-        template <typename C> static Yes& Test(really_has <string(C::*)(), &C::toString>*);
-        template <typename> static No& Test(...);
-    public:
-        static bool const value = sizeof(Test<T>(0)) == sizeof(Yes);
-    };
 
 
     template<typename edgeType = int, typename vertexProperty = no_property>
@@ -268,33 +257,6 @@ namespace {
             return ret;
         }
 
-        // unsigned int is ordinary
-        vector<vertex_descriptor> bfs(vertex_descriptor beg) {
-            vector<vertex_descriptor> recv;
-            boo_bfs_visitor vis(recv); 
-            vector<default_color_type> color_map(num_vertices(G));
-            boost::queue<vertex_descriptor> bf;
-            breadth_first_visit(G,
-                                beg,
-                                bf,
-                                vis,
-                                make_iterator_property_map(color_map.begin(), get(vertex_index, G), color_map[0]));
-
-            return recv; 
-        }
-
-
-        vector<vertex_descriptor> dfs(vertex_descriptor beg) {
-            vector<vertex_descriptor> recv;
-            boo_dfs_visitor vis(recv); 
-            vector<default_color_type> color_map(num_vertices(G));
-            depth_first_visit(G,
-                              beg,
-                              vis,
-                              make_iterator_property_map(color_map.begin(), get(vertex_index, G), color_map[0]));
-
-            return recv; 
-        }
 
         auto getAllVertices() {
             auto verticesVector = vertices(G);
@@ -309,48 +271,7 @@ namespace {
             return num_vertices(G);
         }
 
-        void print() {
-            cout << "vertex list" << endl << endl;
-            {
-                auto verticesVector = vertices(G);
 
-                for (; verticesVector.first != verticesVector.second; ++verticesVector.first) {
-                    cout << *verticesVector.first << "vertex" << endl;
-                }
-            }
-            cout << endl;
-            printEdgeList();
-            cout << "---------------------------------------" << endl;
-            cout << endl;
-
-        }
-
-        template<typename U = edgeType>
-        typename std::enable_if<!std::is_same<U, no_property>::value>::type printEdgeList() {
-            cout << "edge list" << endl;
-            {
-                auto EdgeWeightMap = get(edge_weight_t(), G);
-                auto edgesVector = edges(G);
-                for (; edgesVector.first != edgesVector.second; ++edgesVector.first) {
-                    auto tt = *edgesVector.first;
-                    cout << (*edgesVector.first).m_source << "===>" << (*edgesVector.first).m_target << endl;
-                    cout << "===> weight : " << EdgeWeightMap[*edgesVector.first] << endl;
-                }
-            }
-        }
-        template<typename U = edgeType>
-        typename std::enable_if<std::is_same<U, no_property>::value, void>::type printEdgeList() {
-            cout << "edge list" << endl;
-            {
-                auto EdgeWeightMap = get(edge_weight_t(), G);
-                auto edgesVector = edges(G);
-                for (; edgesVector.first != edgesVector.second; ++edgesVector.first) {
-                    auto tt = *edgesVector.first;
-                    cout << (*edgesVector.first).m_source << "===>" << (*edgesVector.first).m_target << endl;
-                    //cout << "===> weight : " << EdgeWeightMap[*edgesVector.first] << endl;
-                }
-            }
-        }
 
         auto getGraph() {
             return G;
@@ -363,53 +284,13 @@ namespace {
             }
         }
 
+        // unsigned int is ordinary
+        auto bfs(vertex_descriptor beg) ; 
+        auto dfs(vertex_descriptor beg) ;
         // kruskal은 시작하는 vertex가 필요 없기 때문에 parameter X
-        auto boost_kruskal() {
-            typename std::remove_reference<decltype(*this)>::type ret = *this;
-            ret.removeAllEdges();
-            size_t verticesCount = num_vertices(G);
-            size_t edgesCount = num_edges(G);
-
-            auto EdgeWeightMap = get(edge_weight, G);
-            auto weight = get(edge_weight, G);
-
-            vector < edge_descriptor > spanning_tree;
-
-            kruskal_minimum_spanning_tree(G, back_inserter(spanning_tree));
-
-
-            for (typename vector < edge_descriptor >::iterator ei = spanning_tree.begin(); ei != spanning_tree.end(); ++ei) {
-                ret.addEdge(source(*ei, G), target(*ei, G), weight[*ei]);
-            }
-
-            return ret;
-        }
-
-
+        auto boost_kruskal() ; 
         // return Graph
-        auto boost_prim(vertex_descriptor v0) {
-            typename std::remove_reference<decltype(*this)>::type ret = *this;
-            ret.removeAllEdges();
-
-            size_t verticesCount = num_vertices(G);
-
-            vector<vertex_descriptor> p(verticesCount);
-            auto EdgeWeightMap = get(edge_weight_t(), G);
-
-            typename property_map<graphType, vertex_index_t>::type id = get(vertex_index, G);
-            vertex_descriptor v0Index = id[v0];
-
-            prim_minimum_spanning_tree(G, &p[v0Index]);
-
-            for (vertex_descriptor i = 0; i < verticesCount; i++) {
-                if (i != p[i]) {
-                    auto edgeIter = edge(p[i], i, G);
-                    auto t = EdgeWeightMap[edgeIter.first];
-                    ret.addEdge(p[i], i, t);
-                }
-            }
-            return ret;
-        }
+        auto boost_prim(vertex_descriptor v0);
 
 
         void writeSimpleViz(const string filename) {
@@ -563,11 +444,40 @@ namespace {
             cout << "yes prop, yes toString, no weight" << endl;
             writeSimpleViz2(filename);
         }
+        template<typename U = edgeType>
+        typename std::enable_if<!std::is_same<U, no_property>::value>::type printEdgeList() ;
+
+        template<typename U = edgeType>
+        typename std::enable_if<std::is_same<U, no_property>::value, void>::type printEdgeList() ;
+        void print();
     };
 }
 
+#include "booang_prints.hpp"
+#include "booang_algo.hpp"
+
+using namespace booang;
 typedef BGraph<no_property> SimpleGraph;
 typedef BGraph<int> WeightedGraph;
 template<typename vertexProperty>
 class PropGraph : public BGraph<int, vertexProperty> {};
 //typedef BGraph<property<vertex_index_t, int, _>> TestedGraph; 
+template <typename T>
+struct Foo
+{
+    void doSomething(T param);
+    
+    template<typename U = T>
+    void some() ;
+};
+
+
+template <typename T>
+void Foo<T>::doSomething(T param)
+{
+    //implementation
+}
+
+template <typename TTT>
+template<typename U>
+void Foo<TTT>::some() {}
