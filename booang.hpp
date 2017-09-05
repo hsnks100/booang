@@ -1,3 +1,5 @@
+#ifndef ___BOOANG__H_
+#define ___BOOANG__H_
 #include <iostream>                  // for std::cout 
 #include <cassert>
 #include <vector> 
@@ -481,3 +483,5 @@ void Foo<T>::doSomething(T param)
 template <typename TTT>
 template<typename U>
 void Foo<TTT>::some() {}
+
+#endif
