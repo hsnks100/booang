@@ -28,6 +28,7 @@
 // plan to do lists
 // DFS, BFS, Prim, Kruskal, Bellman-Ford, Floyd, Warshall, Dijkstra, Bipartite, Maximum Flow
 
+
 #if (defined(_WIN32) || defined(WIN32))
     #ifndef BOOPATH
         #error must be set BOOPATH (#define) #define BOOPATH 설정하세요.
