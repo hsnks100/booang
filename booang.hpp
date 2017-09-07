@@ -37,14 +37,14 @@
 
 #define DOTPATH BOOPATH##"\\graphviz_2.38\\bin\\dot.exe" 
 
-#if !(defined(_WIN32) || defined(WIN32))
+#if !(defined(_WIN32) || defined(WIN32)) 
 #include <gvc.h>
 int dot2png(const std::string& dot, const std::string& png) {
     //return 0;
     GVC_t *gvc;
     graph_t *g;
     FILE *fp;
-    FILE* out;
+    FILE* out; 
 
     gvc = gvContext();
     printf("%d\n", __LINE__);
