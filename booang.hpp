@@ -29,6 +29,10 @@
 #include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/visitors.hpp>
 #include <boost/graph/kruskal_min_spanning_tree.hpp>
+#include <boost/graph/connected_components.hpp>
+#include <boost/graph/topological_sort.hpp>
+
+
 
 // plan to do lists
 // DFS, BFS, Prim, Kruskal, Bellman-Ford, Floyd, Warshall, Dijkstra, Bipartite, Maximum Flow
@@ -452,6 +456,29 @@ namespace booang{
         template<typename U = edgeType>
         typename std::enable_if<std::is_same<U, no_property>::value, void>::type printEdgeList() ;
         void print();
+
+        vertices_size_type connectedComponents(std::vector<vertex_descriptor>& component) {
+            component(num_vertices(G));
+            return connected_components(G, &component[0]);
+        }
+        vertices_size_type connectedComponents() {
+            std::vector<vertex_descriptor> component;
+            component(num_vertices(G));
+            return connected_components(G, &component[0]);
+        }
+
+        deque<vertex_descriptor> topologySort() {
+            deque<vertex_descriptor> topologicalSorted;
+            try
+            {
+                topological_sort(G, front_inserter(topologicalSorted));
+            }
+            catch (not_a_dag)
+            {
+                throw not_a_dag();
+            }
+            return topologicalSorted;           
+        }
     };
 }
 
