@@ -57,19 +57,16 @@ namespace booang {
 
     // return Graph
     template<typename edgeType, typename vertexProperty>
-    auto BGraph<edgeType, vertexProperty>::boost_prim(vertex_descriptor v0) {
+    auto BGraph<edgeType, vertexProperty>::boost_prim() {
         typename std::remove_reference<decltype(*this)>::type ret = *this;
         ret.removeAllEdges();
 
         size_t verticesCount = num_vertices(G);
 
-        vector<vertex_descriptor> p(verticesCount);
-        auto EdgeWeightMap = get(edge_weight_t(), G);
-
-        typename property_map<graphType, vertex_index_t>::type id = get(vertex_index, G);
-        vertex_descriptor v0Index = id[v0];
-
-        prim_minimum_spanning_tree(G, &p[v0Index]);
+        
+        auto EdgeWeightMap = get(edge_weight_t(), G);  
+        vector<vertex_descriptor> p(num_vertices(G));
+        prim_minimum_spanning_tree(G, &p[0]);     
 
         for (vertex_descriptor i = 0; i < verticesCount; i++) {
             if (i != p[i]) {
