@@ -1,18 +1,34 @@
 CC = g++
 CXXFLAGS = -std=c++14 -I./ -I/usr/include/graphviz
-GRAPHVIZ = -std=c++14 
-TARGET = booang
-OBJECTS = booang.hpp graphviz.cpp 
-SRCS = graphviz.cpp
 
-all : $(TARGET)
 
-$(TARGET): $(OBJECTS)
-	$(CC) $(CXXFLAGS) -o $(TARGET).o -c $(SRCS)
-	$(CC) $(CXXFLAGS) $(GRAPHVIZ) -o $(TARGET) $(TARGET).o `pkg-config libcgraph libgvc --cflags --libs`
 
+
+GRAPHVIZ = graph_viz
+GRAPHVIZ_SRC = graphviz.cpp
+
+BASIC = basic 
+BASIC_SRC = basic.cpp
+
+DFS = dfs
+DFS_SRC = dfs.cpp
+
+all : $(DFS) $(GRAPHVIZ)
+
+$(GRAPHVIZ): booang.hpp $(GRAPHVIZ_SRC)
+	$(CC) $(CXXFLAGS) -o $@.o -c $(GRAPHVIZ_SRC)
+	$(CC) $(CXXFLAGS) -o $@ $@.o -lcgraph -lcdt -lgvc
+	./$(GRAPHVIZ)
+
+$(BASIC): booang.hpp $(BASIC_SRC)
+	$(CC) $(CXXFLAGS) -o $@.o -c $(BASIC_SRC)
+	$(CC) $(CXXFLAGS) -o $@ $@.o -lcgraph -lcdt -lgvc
+
+$(DFS): booang.hpp $(DFS_SRC)
+	$(CC) $(CXXFLAGS) -o $@.o -c $(DFS_SRC)
+	$(CC) $(CXXFLAGS) -o $@ $@.o -lcgraph -lcdt -lgvc
 clean :
-	rm *.o 
+	rm $(BASIC) $(GRAPHVIZ) $(DFS)
 
 kdot : kdot.cpp
 	g++ -c kdot.cpp -o kdot.o -I/usr/include/graphviz
