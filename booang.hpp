@@ -31,7 +31,7 @@
 #include <boost/graph/kruskal_min_spanning_tree.hpp>
 #include <boost/graph/connected_components.hpp>
 #include <boost/graph/topological_sort.hpp>
-
+#include <boost/graph/biconnected_components.hpp>
 
 
 // plan to do lists
@@ -296,7 +296,7 @@ namespace booang{
         // kruskal은 시작하는 vertex가 필요 없기 때문에 parameter X
         auto boost_kruskal() ; 
         // return Graph
-        auto boost_prim(vertex_descriptor v0);
+        auto boost_prim();
 
 
         void writeSimpleViz(const string filename) {
@@ -478,6 +478,42 @@ namespace booang{
                 throw not_a_dag();
             }
             return topologicalSorted;           
+        }
+
+        void cutVertics() {
+            //struct edge_component_t
+            //{
+            //    enum
+            //    {
+            //        num = 555
+            //    };
+            //    typedef edge_property_tag kind;
+            //}
+            //edge_component;
+
+            //auto& g = G;
+            ////auto component = get(edge_weight, g);
+
+            //auto component = get(edge_component, g);
+            //std::size_t num_comps = biconnected_components(g, component);
+            //std::cerr << "Found " << num_comps << " biconnected components.\n";
+
+           /* std::vector<vertex_descriptor> art_points;
+            articulation_points(g, std::back_inserter(art_points));
+            std::cerr << "Found " << art_points.size() << " articulation points.\n";
+
+            std::cout << "graph A {\n" << "  node[shape=\"circle\"]\n";
+
+            for (std::size_t i = 0; i < art_points.size(); ++i) {
+                std::cout << art_points[i] << endl;
+            }
+
+            graph_traits < graphType >::edge_iterator ei, ei_end;
+            for (tie(ei, ei_end) = edges(g); ei != ei_end; ++ei)
+                std::cout << source(*ei, g) << " -- "
+                    << target(*ei, g) << " --- "
+                        << component[*ei];
+            std::cout << "}\n";*/
         }
     };
 }
