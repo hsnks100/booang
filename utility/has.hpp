@@ -1,6 +1,7 @@
 #ifndef __HAS__H_
 #define __HAS__H_
 namespace booang {
+    using namespace std;
     template <typename T>
     class has_toString {
     private:
