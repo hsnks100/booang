@@ -3,7 +3,7 @@
 #include <string>
 #define BOOPATH "C:\\Users\\dlwpd\\Desktop\\githubFiles\\booang"
 #include "booang.hpp"
-/*Booang의 기능 List
+/*Booang function List
 - BGraph()
 - addVertex()
 - addVertex(const vertexProperty& vp)
@@ -17,13 +17,13 @@
 - hasEdge(vertex_descriptor v0, v1)
 - getWeight(vertex_descriptor v0, v1)
 - putWeight(vertex_descriptor v0, v1, edgeType weight)
-- loopOutEdges(이해 못했음)
+- loopOutEdges() // i cannot understand
 - getAllVertices()
 - getGraph()
 - removeAllEdges()
 */
 
-/*Booang의 Algorithm List
+/*Booang Algorithm List
 - dijk(vertex_descriptor v0)
 - bfs(vertex_descriptor v0)
 - dfs(vertex_descriptor v0)
@@ -33,7 +33,7 @@
 - topologySort()
 */
 
-/*Booang의 Graph print List
+/*Booang Graph print List
 - print()
 - printEdgeList()
 - printGraphViz(string filename)
