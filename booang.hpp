@@ -387,7 +387,7 @@ namespace booang{
                 typename std::enable_if<!has_toString<U>::value>::type* = 0,
                 typename std::enable_if<!std::is_same<C, no_property>::value>::type* = 0
             ) {
-            cout << "yes prop, no toString, yes weight" << endl;
+            //cout << "yes prop, no toString, yes weight" << endl;
             writeSimpleViz3(filename);
         }
         template<typename U = vertexProperty,
@@ -400,7 +400,7 @@ namespace booang{
                 typename std::enable_if<std::is_same<U, no_property>::value>::type* = 0,
                 typename std::enable_if<!std::is_same<C, no_property>::value>::type* = 0
             ) {
-            cout << "no prop, yes weight" << endl;
+            //cout << "no prop, yes weight" << endl;
             writeSimpleViz3(filename);
         }
         template<typename U = vertexProperty,
@@ -411,7 +411,7 @@ namespace booang{
                 typename std::enable_if<has_toString<U>::value>::type* = 0,
                 typename std::enable_if<!std::is_same<C, no_property>::value>::type* = 0
             ) {
-            cout << "yes prop, yes toString, yes weight" << endl;
+            //cout << "yes prop, yes toString, yes weight" << endl;
             writeSimpleViz4(filename);
         }
 
@@ -425,7 +425,7 @@ namespace booang{
                 typename std::enable_if<!has_toString<U>::value>::type* = 0,
                 typename std::enable_if<std::is_same<C, no_property>::value>::type* = 0
             ) {
-            cout << "yes prop, no toString, no weight" << endl;
+            //cout << "yes prop, no toString, no weight" << endl;
             writeSimpleViz(filename);
         }
         template<typename U = vertexProperty,
@@ -436,7 +436,7 @@ namespace booang{
                 typename std::enable_if<std::is_same<U, no_property>::value>::type* = 0,
                 typename std::enable_if<std::is_same<C, no_property>::value>::type* = 0
             ) {
-            cout << "no prop, no weight" << endl;
+            //cout << "no prop, no weight" << endl;
             writeSimpleViz(filename);
             // writeSimpleViz();
         }
@@ -448,7 +448,7 @@ namespace booang{
                 typename std::enable_if<has_toString<U>::value>::type* = 0,
                 typename std::enable_if<std::is_same<C, no_property>::value>::type* = 0
             ) {
-            cout << "yes prop, yes toString, no weight" << endl;
+            //cout << "yes prop, yes toString, no weight" << endl;
             writeSimpleViz2(filename);
         }
         template<typename U = edgeType>
