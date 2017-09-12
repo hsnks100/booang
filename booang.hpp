@@ -53,7 +53,7 @@ int dot2png(const string& dot, const string& png) {
     GVC_t *gvc;
     graph_t *g;
     FILE *fp;
-    FILE* out; 
+    FILE* out;
 
 
     gvc = gvContext();
@@ -78,7 +78,7 @@ int dot2png(const string& dot, const string& png) {
 
 #include "utility/has.hpp"
 
-namespace booang{
+namespace booang {
     using namespace boost;
     using namespace std;
 
@@ -109,7 +109,7 @@ namespace booang{
             boo_dfs_visitor(vector<vertex_descriptor>& r)
                 : recv(r) {
                 ;
-            } 
+            }
             void discover_vertex(vertex_descriptor v, graphType const& g) const {
                 recv.push_back(v);
             }
@@ -121,7 +121,7 @@ namespace booang{
             boo_bfs_visitor(vector<vertex_descriptor>& r)
                 : recv(r) {
                 ;
-            } 
+            }
             void discover_vertex(vertex_descriptor v, graphType const& g) const {
                 recv.push_back(v);
             }
@@ -292,10 +292,10 @@ namespace booang{
         }
 
         // unsigned int is ordinary
-        auto bfs(vertex_descriptor beg) ; 
-        auto dfs(vertex_descriptor beg) ;
+        auto bfs(vertex_descriptor beg);
+        auto dfs(vertex_descriptor beg);
         // kruskal은 시작하는 vertex가 필요 없기 때문에 parameter X
-        auto boost_kruskal() ; 
+        auto boost_kruskal();
         // return Graph
         auto boost_prim();
 
@@ -383,7 +383,7 @@ namespace booang{
             typename C = edgeType
         >
             void printGraphViz(const string filename,
-                               typename std::enable_if<!std::is_same<U, no_property>::value>::type* = 0,
+                typename std::enable_if<!std::is_same<U, no_property>::value>::type* = 0,
                 typename std::enable_if<!has_toString<U>::value>::type* = 0,
                 typename std::enable_if<!std::is_same<C, no_property>::value>::type* = 0
             ) {
@@ -452,10 +452,10 @@ namespace booang{
             writeSimpleViz2(filename);
         }
         template<typename U = edgeType>
-        typename std::enable_if<!std::is_same<U, no_property>::value>::type printEdgeList() ;
+        typename std::enable_if<!std::is_same<U, no_property>::value>::type printEdgeList();
 
         template<typename U = edgeType>
-        typename std::enable_if<std::is_same<U, no_property>::value, void>::type printEdgeList() ;
+        typename std::enable_if<std::is_same<U, no_property>::value, void>::type printEdgeList();
         void print();
 
         vertices_size_type connectedComponents(std::vector<vertex_descriptor>& component) {
@@ -478,7 +478,7 @@ namespace booang{
             {
                 throw not_a_dag();
             }
-            return topologicalSorted;           
+            return topologicalSorted;
         }
 
         void cutVertics() {
@@ -532,9 +532,9 @@ template <typename T>
 struct Foo
 {
     void doSomething(T param);
-    
+
     template<typename U = T>
-    void some() ;
+    void some();
 };
 
 

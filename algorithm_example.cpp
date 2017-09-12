@@ -74,7 +74,7 @@ int main() {
     // prim result graph
     auto prim = weightedGraph.boost_prim();
     prim.printGraphViz(outFilename);
-    
+
     prim.print();
     return 0;
 }
