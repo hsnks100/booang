@@ -29,5 +29,22 @@
     <ClCompile Include="..\algorithm_example.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="..\speed_check.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="speedCheck_500.txt">
+      <Filter>리소스 파일</Filter>
+    </Text>
+    <Text Include="speedCheck_1000.txt">
+      <Filter>리소스 파일</Filter>
+    </Text>
+    <Text Include="speedCheck_2000.txt">
+      <Filter>리소스 파일</Filter>
+    </Text>
+    <Text Include="speedCheck_100.txt">
+      <Filter>리소스 파일</Filter>
+    </Text>
   </ItemGroup>
 </Project>

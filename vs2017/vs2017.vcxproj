@@ -149,7 +149,17 @@
     <ClInclude Include="..\booang_prints.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\algorithm_example.cpp" />
+    <ClCompile Include="..\algorithm_example.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\speed_check.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="speedCheck_100.txt" />
+    <Text Include="speedCheck_1000.txt" />
+    <Text Include="speedCheck_2000.txt" />
+    <Text Include="speedCheck_500.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
