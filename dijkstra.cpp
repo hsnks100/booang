@@ -6,16 +6,12 @@
 
 int main() {
     WeightedGraph G2;
-    G2.addVertex(1);
-    G2.addVertex(2);
-    G2.addVertex(3);
-    G2.addVertex(4);
+    G2.addVertex();
+    G2.addVertex();
+    G2.addVertex();
+    G2.addVertex();
     G2.addEdge(1, 4, 1000);
 
-    for (auto& i : G2[1]) {
-        std::cout << i.first << std::endl;
-        std::cout << i.second << std::endl;
-    }
     G2.dijk(1);
     return 0;
 }

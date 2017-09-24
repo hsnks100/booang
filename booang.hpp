@@ -48,7 +48,7 @@
 
 #if !(defined(_WIN32) || defined(WIN32)) 
 #include <gvc.h>
-int dot2png(const string& dot, const string& png) {
+int dot2png(const std::string& dot, const std::string& png) {
     //return 0;
     GVC_t *gvc;
     graph_t *g;
@@ -57,7 +57,7 @@ int dot2png(const string& dot, const string& png) {
 
 
     gvc = gvContext();
-    cout << dot << endl;
+    std::cout << dot << std::endl;
     fp = fopen(dot.c_str(), "r");
     out = fopen(png.c_str(), "w");
 #ifdef WITH_CGRAPH
