@@ -63,14 +63,15 @@ vector<int> dijkstra(int N, int start) {
 }
 
 typedef adjacency_list < listS, vecS, directedS,
-    no_property, property < edge_weight_t, int > > graph_t;
-typedef graph_traits < graph_t >::vertex_descriptor vertex_descriptor;
+    no_property, property < edge_weight_t, int > > graph_type;
+typedef typename graph_traits < graph_type >::vertex_descriptor vertex_descriptor;
 typedef std::pair<int, int> Edge;
-Edge edgeArray[2000];
+Edge edgeArray[4000000];
 int weights[4000000];
+
 int main() {
     /* first, just input files to array */
-    ifstream fin("speedCheck_500.txt");
+    ifstream fin("speedCheck_2000.txt");
     classGraph g1;
     int nodeCount, edgeCount;
     fin >> nodeCount >> edgeCount;
@@ -84,24 +85,42 @@ int main() {
 
     /* ---------- simple class speed ---------- */
     clock_t time_begin, time_end;
-    time_begin = clock();
-    for (int i = 0; i < nodeCount; i++) {
-        g1.nodes.push_back(classNode(i));
-    }
+
+    vector<pair<int, int>> GGG[20001]; // grpah[i] 는 i 에서 갈 수 있는 정점
     for (int i = 0; i < nodeCount; i++) {
         for (int j = 0; j < nodeCount; j++) {
-            g1.nodes[i].edges.push_back(classEdge(j, edgeArr[i][j]));
+            GGG[i].push_back(make_pair(j, edgeArr[i][j]));
         }
     }
-    vector<int> start0Dist = dijkstra(nodeCount, 0);
+    vector<int> dist(nodeCount + 1, 0x3f3f3f3f);
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>> > pq;
+    pq.push(make_pair(0, 0));
+    dist[0] = 0;
+
+    time_begin = clock();
+    while (!pq.empty()) {
+        int u = pq.top().second;
+        pq.pop();
+
+        for (auto& i : GGG[u]) {
+            // i.to, i.cost
+            int v = i.first;
+            int w = i.second;
+
+            if (dist[v] > dist[u] + w) {
+                dist[v] = dist[u] + w;
+                pq.push(make_pair(dist[v], v));
+            }
+        }
+    }
+
     time_end = clock();
-    cout << "simple class speed(" << nodeCount << ") = " << (((double)(time_end - time_begin)) / CLOCKS_PER_SEC) << endl;
+    cout << (((double)(time_end - time_begin)) / CLOCKS_PER_SEC) << "\t";
     /* ---------- simple class speed end ---------- */
 
 
 
     /* ---------- boost speed check ---------- */
-    time_begin = clock();
 
     const int num_nodes = nodeCount;
     int count = 0;
@@ -114,30 +133,33 @@ int main() {
         }
     }
     int num_arcs = count;
-    graph_t g(edgeArray, edgeArray + num_arcs, weights, num_nodes);
-    property_map<graph_t, edge_weight_t>::type weightmap = get(edge_weight, g);
+    graph_type g(edgeArray, edgeArray + num_arcs, weights, num_nodes);
+    property_map<graph_type, edge_weight_t>::type weightmap = get(edge_weight, g);
     std::vector<vertex_descriptor> p(num_vertices(g));
     std::vector<int> d(num_vertices(g));
     vertex_descriptor s = vertex(0, g);
 
+    time_begin = clock();
     dijkstra_shortest_paths(g, s,
         predecessor_map(boost::make_iterator_property_map(p.begin(), get(boost::vertex_index, g))).
         distance_map(boost::make_iterator_property_map(d.begin(), get(boost::vertex_index, g))));
     time_end = clock();
-    cout << "boost speed(" << nodeCount << ") = " << (((double)(time_end - time_begin)) / CLOCKS_PER_SEC) << endl;
+    cout << (((double)(time_end - time_begin)) / CLOCKS_PER_SEC) << "\t";
     /* ---------- boost speed check end ---------- */
 
     /* ---------- booang speed check ---------- */
-    time_begin = clock();
+    
     WeightedGraph weightedGraph;
     for (int i = 0; i < nodeCount; i++) {
         for (int j = 0; j < nodeCount; j++) {
             if (i != j) weightedGraph.addEdge(i, j, edgeArr[i][j]);
         }
     }
+    time_begin = clock();
     weightedGraph.dijk(0);
+
     time_end = clock();
-    cout << "booang speed(" << nodeCount << ") = " << (((double)(time_end - time_begin)) / CLOCKS_PER_SEC) << endl;
+    cout << (((double)(time_end - time_begin)) / CLOCKS_PER_SEC) << "\n";
     /* ---------- booang speed check end ---------- */
 
     return 0;

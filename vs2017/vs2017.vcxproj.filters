@@ -32,6 +32,9 @@
     <ClCompile Include="..\speed_check.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="..\graphviz.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="speedCheck_500.txt">

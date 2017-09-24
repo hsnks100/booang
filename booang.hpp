@@ -251,7 +251,6 @@ namespace booang {
                 predecessor_map(make_iterator_property_map(p.begin(), get(vertex_index, g))).
                 distance_map(make_iterator_property_map(d.begin(), get(vertex_index, g))));
 
-            cout << "distances and parents:" << endl;
             vertex_iterator vi, vend;
 
             ShortestPath ret;

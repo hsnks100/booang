@@ -3,7 +3,8 @@
 #include <string>
 #define BOOPATH "C:\\Users\\dlwpd\\Desktop\\githubFiles\\booang"
 #include "booang.hpp"
-/*Booang function List
+
+/* Booang function List
 - BGraph()
 - addVertex()
 - addVertex(const vertexProperty& vp)
@@ -23,23 +24,26 @@
 - removeAllEdges()
 */
 
-/*Booang Algorithm List
+/* Booang Algorithm List
 - dijk(vertex_descriptor v0)
 - bfs(vertex_descriptor v0)
 - dfs(vertex_descriptor v0)
 - boost_kruskal()
 - boost_prim()
-- connectedComponents(vector<vertex_descriptor vertices);
+- connectedComponents(vector<vertex_descriptor> vertices);
 - topologySort()
 */
 
-/*Booang Graph print List
+/* Booang Graph print List
 - print()
 - printEdgeList()
 - printGraphViz(string filename)
 */
+
 using namespace std;
+
 int main() {
+    
     string outFilename = "1.png";
     WeightedGraph weightedGraph;
     weightedGraph.addEdge(0, 1, 01);
@@ -76,5 +80,6 @@ int main() {
     prim.printGraphViz(outFilename);
 
     prim.print();
+
     return 0;
 }
