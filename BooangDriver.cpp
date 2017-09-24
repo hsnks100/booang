@@ -12,11 +12,7 @@ int main(int, char*[])
     auto v1 = G.addVertex();
     G.addEdge(v0, v1, 2);
     G.addEdge(v1, v0, 1);
-    G.print();
-
-
-
-
+    G.print(); 
     return 0;
 }
 

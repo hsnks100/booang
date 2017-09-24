@@ -13,7 +13,12 @@ BASIC_SRC = basic.cpp
 DFS = dfs
 DFS_SRC = dfs.cpp
 
-all : $(DFS) $(GRAPHVIZ)
+SRCS=$(wildcard *.cpp)
+all : $(BASIC)
+
+tests :
+
+	$(CC) $(CXXFLAGS) -c $(SRCS)
 
 $(GRAPHVIZ): booang.hpp $(GRAPHVIZ_SRC)
 	$(CC) $(CXXFLAGS) -o $@.o -c $(GRAPHVIZ_SRC)

@@ -42,8 +42,7 @@ int main(int, char*[])
         cout << v0 << " to " << (it->to) << " is exist.";
         cout << " weight = " << it->weight << endl;
     }
-    cout << "--- end of outEdgeList print ---" << endl << endl;
-
+    cout << "--- end of outEdgeList print ---" << endl << endl; 
 
     // method 2
     cout << "#3. " << v0 << "에서 나가는 Edge의 List입니다" << endl;
@@ -54,7 +53,7 @@ int main(int, char*[])
 
     // breath first search
     cout << "BFS Search Example" << endl;
-    auto visitSequence = G.bfs();
+    auto visitSequence = G.bfs(0);
     cout << "Visit Sqeunce : ";
     for (auto it = visitSequence.begin(); it != visitSequence.end(); it++) {
         cout << *it << " ";
@@ -64,7 +63,7 @@ int main(int, char*[])
     // dijkstra algorithm
     cout << "dijk result start from " << v0 << endl;
     auto h = G.dijk(v0);
-    for (auto& i : h) {
+    for (auto& i : h.toWeight) {
         cout << v0 << " to " << i.to << " root minimum dist = " << i.weight << endl;
     }
     cout << "--- end of dijkstra ---" << endl << endl;
@@ -72,7 +71,7 @@ int main(int, char*[])
 
     // prim algorithm
     cout << "result of prim's algorithm start from " << v0 << endl;
-    auto primResultFrom_G = G.boost_prim(v0);
+    auto primResultFrom_G = G.boost_prim();
 
     primResultFrom_G.print();
     cout << "--- end of prim algorithm ---" << endl << endl;
