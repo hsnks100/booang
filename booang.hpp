@@ -462,8 +462,8 @@ namespace booang {
             return connected_components(G, &component[0]);
         }
         vertices_size_type connectedComponents() {
-            std::vector<vertex_descriptor> component;
-            component(num_vertices(G));
+            std::vector<vertex_descriptor> component(num_vertices(G));
+            
             return connected_components(G, &component[0]);
         }
 
